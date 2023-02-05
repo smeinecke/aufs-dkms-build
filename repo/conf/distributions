@@ -1,0 +1,14 @@
+Description: smeinecke/aufs-dkms-build
+Codename: buster
+Architectures: amd64
+Components: main
+SignWith: C8CBA9D6EF42B84232EEE64D088BC0672C20AAC9
+
+
+Description: smeinecke/aufs-dkms-build
+Codename: bullseye
+Architectures: amd64
+Components: main
+SignWith: C8CBA9D6EF42B84232EEE64D088BC0672C20AAC9
+
+

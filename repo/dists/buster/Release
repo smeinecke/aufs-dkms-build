@@ -1,0 +1,17 @@
+Codename: buster
+Date: Sun, 05 Feb 2023 20:34:52 UTC
+Architectures: amd64
+Components: main
+Description: smeinecke/aufs-dkms-build
+MD5Sum:
+ d41d8cd98f00b204e9800998ecf8427e 0 main/binary-amd64/Packages
+ 7029066c27ac6f5ef18d660d5741979a 20 main/binary-amd64/Packages.gz
+ e49d0349455f04b5b6e7a6887d8ec700 75 main/binary-amd64/Release
+SHA1:
+ da39a3ee5e6b4b0d3255bfef95601890afd80709 0 main/binary-amd64/Packages
+ 46c6643f07aa7f6bfe7118de926b86defc5087c4 20 main/binary-amd64/Packages.gz
+ a337190f5b9df5b3ed2212d7b524c0a58e6a65a0 75 main/binary-amd64/Release
+SHA256:
+ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 0 main/binary-amd64/Packages
+ 59869db34853933b239f1e2219cf7d431da006aa919635478511fabbfc8849d2 20 main/binary-amd64/Packages.gz
+ 42b6bec9b386ec013fb334e46fe1f1605ca568ed42bad7ce12a3b4b1afed8bbc 75 main/binary-amd64/Release

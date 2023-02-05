@@ -1,0 +1,26 @@
+Package: aufs-dkms
+Version: 5.10-bullseye
+Architecture: all
+Maintainer: Pablo Ruiz <pablo.ruiz@gmail.com>
+Installed-Size: 878
+Depends: dkms (>= 2.1.0.0)
+Multi-Arch: foreign
+Homepage: http://aufs.sourceforge.net/
+Priority: optional
+Section: kernel
+Filename: pool/main/a/aufs-dkms/aufs-dkms_5.10-bullseye_all.deb
+Size: 148804
+SHA256: 300a96ad390aee7517866f537a50c093933ec97ad3b3e8d8c3fc2550cac22ce5
+SHA1: 6dba9f368b6d8d132aaccfc6e666ae58a28bac4d
+MD5sum: b9c0403a3bec32d7c27fc0d9f6d8138b
+Description: DKMS files to build and install aufs
+ The aufs driver provides a union mount for Linux filesystems. It allows one
+ to virtually merge the contents of several directories and/or stack them, so
+ that file changes in the aufs union mount end up as changes in only one
+ of the source directories.
+ .
+ This package contains the DKMS files to build and install aufs.
+ .
+ To install this package, you have to install the header files for your current
+ kernel manually (usually included in the "linux-headers-<your architecture>").
+

@@ -1,0 +1,34 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Codename: bullseye
+Date: Sun, 05 Feb 2023 20:34:52 UTC
+Architectures: amd64
+Components: main
+Description: smeinecke/aufs-dkms-build
+MD5Sum:
+ 51224559e60fd4f847c9d1974d6c84b8 1023 main/binary-amd64/Packages
+ a8c28f2b4fe1980ad98b04505597bea6 629 main/binary-amd64/Packages.gz
+ e49d0349455f04b5b6e7a6887d8ec700 75 main/binary-amd64/Release
+SHA1:
+ 6d89c7db22e88036f1ec487c00a061e38c2d67bf 1023 main/binary-amd64/Packages
+ 419eeed8301322928e8fc71b7aa3ac843054fb47 629 main/binary-amd64/Packages.gz
+ a337190f5b9df5b3ed2212d7b524c0a58e6a65a0 75 main/binary-amd64/Release
+SHA256:
+ ec79447da49cb19556c914c7ca0eaa48600cdb4796e26247442b3ff9f2fe27af 1023 main/binary-amd64/Packages
+ 76b3292728193f09c0f39c3b11dcce2511ff6b1aa11307df7ceb3108a3de4a2b 629 main/binary-amd64/Packages.gz
+ 42b6bec9b386ec013fb334e46fe1f1605ca568ed42bad7ce12a3b4b1afed8bbc 75 main/binary-amd64/Release
+-----BEGIN PGP SIGNATURE-----
+
+iQGzBAEBCgAdFiEEyMup1u9CuEIy7uZNCIvAZywgqskFAmPgEuwACgkQCIvAZywg
+qsmJzgv9HYAING+2NWctfJ7tNV/lnx7jLQgty6nyOf8tqWECghNm9MYmkZBixXE/
+ha6ZQaVBQZH6SAymaEQjliG6DbEJ7CFSOrZVd2lCZ30xAapwAjHDowpghgl1kvUp
+uY9/vH7ZgbS1WDLoXrKbd+AllcD9xYu9qcjuPKqkB8CmgnL1qB4QZpxNtiZJzpqH
+GceqBdmUtQTwWq/LYyXNveiBK0Y9b2g1HZPc+YnULm7UPCsNzIwDgKx9t/64jzqc
+Jeya6nvtELje+8eKRR5/NFsi3LR7Ge7QhpUkk0oJ21ayHGx2ii/Wfj5nl+UM1WpI
+8TATfHrZnS1xaMb0fiZTtoNRdVXYhpZeBn8S5WhzE9M60YCHxKP6tHD6Tgmx4PFp
+HMxHRhimm9ss1B0CGt+87ZbD5Kku2hufdUoM5+Vt0975n3zIT2TZKtMIeNfrsjeS
+7U/qNrr21nkrz+48QudbUD31zxU13RiMlb0KUwt/JRG+Vb011uK70uy/VT70TkYm
+cQoUGjUk
+=pfju
+-----END PGP SIGNATURE-----
