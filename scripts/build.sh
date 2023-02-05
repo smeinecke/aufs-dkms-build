@@ -42,13 +42,13 @@ echo "Checkout: ${VERSION_TAG}"
 git checkout "aufs${VERSION_TAG}"
 
 cd "${WORKDIR}"
-cp -va "${WORKDIR}/aufs-standalone/fs/aufs ${WORKDIR}/aufs-dkms/src"
+cp -va "${WORKDIR}/aufs-standalone/fs/aufs" "${WORKDIR}/aufs-dkms/src"
 # create original source tar file - just for dpkg-buildpackage compatibility
 tar -cjf "${WORKDIR}/aufs-dkms_${VERSION_TAG}.orig.tar.bz2" -C "${WORKDIR}/aufs-dkms" .
 
 cd "${WORKDIR}/aufs-dkms"
 
-cp -vr ${SCRIPTDIR}/debian debian
+cp -vr "${SCRIPTDIR}/debian" debian
 (
   echo "aufs-dkms (${VERSION_TAG}-${DEB_FLAVOR}) unstable; urgency=high"
   echo ""
@@ -59,7 +59,7 @@ cp -vr ${SCRIPTDIR}/debian debian
 ) > debian/changelog
 
 if [ -d "${WORKDIR}/patches.$DEB_FLAVOR" ]; then
-  cp -va ${WORKDIR}/patches.$DEB_FLAVOR debian/
+  cp -va "${WORKDIR}/patches.$DEB_FLAVOR" debian/
 fi
 
 DEB_BUILD_OPTIONS="noautodbgsym nocheck nodocs" dpkg-buildpackage -j$(nproc) -d -us -b
