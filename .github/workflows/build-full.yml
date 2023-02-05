@@ -19,7 +19,7 @@ jobs:
       matrix:
         os-version: ["buster", "bullseye"]
     container:
-      image: "greensec/aufs-dkms-build:${{ matrix.os-version }}"
+      image: "smeinecke/aufs-dkms-build:${{ matrix.os-version }}"
       options: --privileged --device /dev/fuse
     steps:
       - name: Checkout code

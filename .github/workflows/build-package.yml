@@ -21,7 +21,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     container:
-      image: "greensec/aufs-dkms-build:${{ github.event.inputs.flavor }}"
+      image: "smeinecke/aufs-dkms-build:${{ github.event.inputs.flavor }}"
       options: --privileged --device /dev/fuse
     steps:
       - name: Checkout code
