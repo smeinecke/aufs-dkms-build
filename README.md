@@ -1,6 +1,5 @@
-# aufs-dkms-build/
-Build aufs for debian 11 (bullseye) kernel
-
+# aufs-dkms-build
+Build aufs-dkms package for debian 11 (bullseye) kernel
 
 ## Add Repo:
 ```
