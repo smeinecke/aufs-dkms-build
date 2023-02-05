@@ -1,0 +1,24 @@
+FROM debian:buster-slim
+
+ADD assets/dpkg_nodoc /etc/dpkg/dpkg.cfg.d/90_nodoc
+ADD assets/dpkg_nolocale /etc/dpkg/dpkg.cfg.d/90_nolocale
+ADD assets/apt_nocache /etc/apt/apt.conf.d/90_nocache
+ADD assets/apt_mindeps /etc/apt/apt.conf.d/90_mindeps
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# default dependencies
+RUN	set -e \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends wget ca-certificates gnupg quilt ccache distcc \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/* /var/tmp/* /var/log/*
+
+# install package deps
+RUN set -e \
+    && echo "deb-src http://deb.debian.org/debian buster main" >/etc/apt/sources.list.d/buster-source.list \
+    && echo "deb http://http.debian.net/debian buster-backports main" >/etc/apt/sources.list.d/buster-backports.list \
+    && apt-get update \
+    && apt-get install -y build-essential devscripts fakeroot quilt dh-make automake libdistro-info-perl less dkms \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/* /var/tmp/* /var/log/*

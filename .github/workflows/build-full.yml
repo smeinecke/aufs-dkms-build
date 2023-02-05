@@ -1,0 +1,90 @@
+name: build full release
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      version_tag:
+        description: 'Version Tag'
+        default: '5.10'
+        required: true
+  create:
+    tags:
+      - '*'
+jobs:
+  build:
+    name: Build packages
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os-version: ["buster", "bullseye"]
+    container:
+      image: "greensec/aufs-dkms-build:${{ matrix.os-version }}"
+      options: --privileged --device /dev/fuse
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set env
+        if: startsWith(github.ref, 'refs/tags/')
+        run: echo "VERSION_TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Set env
+        if: github.event.inputs.version_tag != ''
+        run: echo "VERSION_TAG=${{ github.event.inputs.version_tag }}" >> $GITHUB_ENV
+      - name: Cache build
+        uses: actions/cache@v3
+        with:
+          path: |
+            cache
+          key: "${{ matrix.os-version }}-build-cache-${{ env.VERSION_TAG }}"
+          restore-keys: |
+            "${{ matrix.os-version }}-build-cache-"
+      - name: Run build script
+        run: ./scripts/build.sh
+        env:
+          DEB_FLAVOR: "${{ matrix.os-version }}"
+      - name: Upload deb files
+        uses: actions/upload-artifact@v3
+        with:
+          name: packages
+          path: ./*.deb
+  add_release:
+    name: Add package to release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: packages
+      - name: Display structure of downloaded files
+        run: ls -R
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ./*.deb
+      - name: Add buster release
+        uses: smeinecke/apt-repo-action@v2.1.1
+        with:
+          github_token: ${{ secrets.GH_PAT }}
+          repo_supported_arch: amd64
+          repo_supported_version: |
+            buster
+            bullseye
+          file: |
+            *-buster_*.deb
+          file_target_version: buster
+          private_key: ${{ secrets.APT_SIGNING_KEY }}
+          key_passphrase: ""
+      - name: Add bullseye release
+        uses: smeinecke/apt-repo-action@v2.1.1
+        with:
+          github_token: ${{ secrets.GH_PAT }}
+          repo_supported_arch: amd64
+          repo_supported_version: |
+            buster
+            bullseye
+          file: |
+            *-bullseye_*.deb
+          file_target_version: bullseye
+          private_key: ${{ secrets.APT_SIGNING_KEY }}
+          key_passphrase: ""

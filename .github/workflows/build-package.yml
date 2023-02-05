@@ -1,0 +1,65 @@
+# This is a basic workflow that is manually triggered
+
+name: build release
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      flavor:
+        type: choice
+        description: 'Debian/Ubuntu Version'
+        options:
+          - 'bullseye'
+          - 'buster'
+        required: true
+      version_tag:
+        description: 'Version Tag'
+        default: '5.10'
+        required: true
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    container:
+      image: "greensec/aufs-dkms-build:${{ github.event.inputs.flavor }}"
+      options: --privileged --device /dev/fuse
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Cache build
+        uses: actions/cache@v3
+        with:
+          path: |
+            cache
+          key: "${{ github.event.inputs.flavor }}-build-cache-${{ github.event.inputs.version_tag }}"
+          restore-keys: |
+            "${{ github.event.inputs.flavor }}-build-cache-"
+      - name: Run build script
+        run: ./scripts/build.sh
+        env:
+          DEB_FLAVOR: "${{ github.event.inputs.flavor }}"
+          VERSION_TAG: "${{ github.event.inputs.version_tag }}"
+      - name: Upload deb files
+        uses: actions/upload-artifact@v3
+        with:
+          name: packages
+          path: ./*.deb
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ./*.deb
+      - name: Github pages APT repo
+        uses: smeinecke/apt-repo-action@v2.1.0
+        with:
+          github_token: ${{ secrets.GH_PAT }}
+          repo_supported_arch: amd64
+          repo_supported_version: |
+            buster
+            bullseye
+          file: |
+            *.deb
+          file_target_version: "${{ github.event.inputs.flavor }}"
+          public_key: ${{ secrets.APT_PUBLIC_KEY }}
+          private_key: ${{ secrets.APT_SIGNING_KEY }}
+          key_passphrase: ""
