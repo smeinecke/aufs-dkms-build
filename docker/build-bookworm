@@ -19,6 +19,6 @@ RUN set -e \
     && echo "deb-src http://deb.debian.org/debian bookworm main" >/etc/apt/sources.list.d/bookworm-source.list \
     && echo "deb http://http.debian.net/debian bookworm-backports main" >/etc/apt/sources.list.d/bookworm-backports.list \
     && apt-get update \
-    && apt-get install -y build-essential devscripts fakeroot quilt dh-make automake libdistro-info-perl less dkms git \
+    && apt-get install -y build-essential devscripts fakeroot quilt dh-make automake libdistro-info-perl less dkms dh-dkms cmake git \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/* /var/tmp/* /var/log/*
