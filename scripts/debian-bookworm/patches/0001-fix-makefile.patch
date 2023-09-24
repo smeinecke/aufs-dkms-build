@@ -1,5 +1,11 @@
+Description: Update Makefile
+Author: Stefan Meinecke <meinecke@greensec.de>
+Forwarded: not-needed
+Last-Update: 2023-09-24
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- aufs-6.5.orig/fs/aufs/Makefile	2023-09-15 10:48:39.000000000 +0200
-+++ aufs-6.5.orig/fs/aufs/Makefile	2023-09-24 19:13:04.047014230 +0200
++++ aufs-6.5/fs/aufs/Makefile	2023-09-24 19:13:04.047014230 +0200
 @@ -1,9 +1,14 @@
  # SPDX-License-Identifier: GPL-2.0
 
