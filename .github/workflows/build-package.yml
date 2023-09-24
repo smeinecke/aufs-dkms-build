@@ -9,6 +9,7 @@ on:
         type: choice
         description: 'Debian/Ubuntu Version'
         options:
+          - 'bookworm'
           - 'bullseye'
           - 'buster'
         required: true
@@ -16,6 +17,9 @@ on:
         description: 'Version Tag'
         default: '5.10'
         required: true
+      release:
+        type: boolean
+        description: "publish to repository"
 jobs:
   build:
     name: Build
@@ -46,11 +50,12 @@ jobs:
           path: ./*.deb
       - name: Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+        if: github.event.inputs.release && startsWith(github.ref, 'refs/tags/')
         with:
           files: ./*.deb
       - name: Github pages APT repo
         uses: smeinecke/apt-repo-action@v2.1.0
+        if: github.event.inputs.release
         with:
           github_token: ${{ secrets.GH_PAT }}
           repo_supported_arch: amd64

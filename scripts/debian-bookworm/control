@@ -1,0 +1,21 @@
+Source: aufs-dkms
+Section: kernel
+Priority: optional
+Maintainer: Pablo Ruiz <pablo.ruiz@gmail.com>
+Build-Depends: debhelper (>= 11), dkms, dh-dkms
+Homepage: http://aufs.sourceforge.net/
+
+Package: aufs-dkms
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}
+Description: DKMS files to build and install aufs
+ The aufs driver provides a union mount for Linux filesystems. It allows one
+ to virtually merge the contents of several directories and/or stack them, so
+ that file changes in the aufs union mount end up as changes in only one
+ of the source directories.
+ .
+ This package contains the DKMS files to build and install aufs.
+ .
+ To install this package, you have to install the header files for your current
+ kernel manually (usually included in the "linux-headers-<your architecture>").

@@ -8,6 +8,7 @@ on:
         type: choice
         description: 'Debian Version'
         options:
+          - 'bookworm'
           - 'bullseye'
           - 'buster'
         required: true

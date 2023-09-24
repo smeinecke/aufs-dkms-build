@@ -48,7 +48,7 @@ tar -cjf "${WORKDIR}/aufs-dkms_${VERSION_TAG}.orig.tar.bz2" -C "${WORKDIR}/aufs-
 
 cd "${WORKDIR}/aufs-dkms"
 
-cp -vr "${SCRIPTDIR}/debian" debian
+cp -vr "${SCRIPTDIR}/debian-{$DEB_FLAVOR}" debian
 (
   echo "aufs-dkms (${VERSION_TAG}-${DEB_FLAVOR}) unstable; urgency=high"
   echo ""
