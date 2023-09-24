@@ -59,7 +59,8 @@ jobs:
         with:
           github_token: ${{ secrets.GH_PAT }}
           repo_supported_arch: amd64
-          repo_supported_version: |
+          repo_supported_version:
+            bookworm|
             buster
             bullseye
           file: |
