@@ -10,7 +10,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # default dependencies
 RUN	set -e \
     && apt-get update \
-    && apt-get install -y --no-install-recommends wget ca-certificates gnupg quilt ccache distcc \
+    && apt-get install -y --no-install-recommends wget ca-certificates gnupg quilt ccache distcc reprepro gpg python3 python3-git python3-gnupg expect python3-debian \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/* /var/tmp/* /var/log/*
 
