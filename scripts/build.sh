@@ -58,8 +58,8 @@ cp -vr "${SCRIPTDIR}/debian-${DEB_FLAVOR}" debian
   echo ""
 ) > debian/changelog
 
-if [ -d "${WORKDIR}/patches.$DEB_FLAVOR" ]; then
-  cp -va "${WORKDIR}/patches.$DEB_FLAVOR" debian/
+if [ -d "../patches.$DEB_FLAVOR" ]; then
+  cp -va ../patches.$DEB_FLAVOR debian/
 fi
 
 DEB_BUILD_OPTIONS="noautodbgsym nocheck nodocs" dpkg-buildpackage -j$(nproc) -d -us -b
