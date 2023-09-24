@@ -2,7 +2,7 @@ Source: aufs-dkms
 Section: kernel
 Priority: optional
 Maintainer: Pablo Ruiz <pablo.ruiz@gmail.com>
-Build-Depends: debhelper (>= 11), dkms, dh-dkms
+Build-Depends: debhelper (>= 12), dkms, dh-dkms, linux-kbuild-6.1
 Homepage: http://aufs.sourceforge.net/
 
 Package: aufs-dkms
