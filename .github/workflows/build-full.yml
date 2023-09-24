@@ -63,7 +63,7 @@ jobs:
         with:
           files: ./*.deb
       - name: Add buster release
-        uses: smeinecke/apt-repo-action@v2.1.1
+        uses: smeinecke/apt-repo-action@v2.1.4
         with:
           github_token: ${{ secrets.GH_PAT }}
           repo_supported_arch: amd64
@@ -76,7 +76,7 @@ jobs:
           private_key: ${{ secrets.APT_SIGNING_KEY }}
           key_passphrase: ""
       - name: Add bullseye release
-        uses: smeinecke/apt-repo-action@v2.1.1
+        uses: smeinecke/apt-repo-action@v2.1.4
         with:
           github_token: ${{ secrets.GH_PAT }}
           repo_supported_arch: amd64
