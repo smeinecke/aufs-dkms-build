@@ -43,7 +43,7 @@ jobs:
         env:
           DEB_FLAVOR: "${{ matrix.os-version }}"
       - name: Upload deb files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: packages
           path: ./*.deb
