@@ -9,7 +9,7 @@
 # EXPORT_SYMBOL_GPL()s, while aufs itself stays in the aufs-dkms package.
 #
 # Usage: build-kernel.sh <debian-flavor>
-#        e.g.  build-kernel.sh trixie
+#        e.g.  build-kernel.sh trixie | bookworm | bullseye
 #
 # Environment:
 #   WORK_DIR        directory for source + output packages (default: /src)
@@ -25,16 +25,22 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KERNEL_CONFIG="${KERNEL_CONFIG:-${SCRIPT_DIR}/kernel}"
 WORK_DIR="${WORK_DIR:-/src}"
-export DEB_BUILD_PROFILES="${DEB_BUILD_PROFILES:-nodoc}"
+# nodoc skips the -doc packages; noudeb skips debian-installer udebs
+# (bullseye's udeb packaging expects the stock flavour names).
+export DEB_BUILD_PROFILES="${DEB_BUILD_PROFILES:-nodoc noudeb}"
 
 usage() {
     echo "usage: $0 <debian-flavor>" >&2
-    echo "  flavors: trixie (others may be added per kernel series support)" >&2
+    echo "  flavors: bullseye (5.10), bookworm (6.1), trixie (6.12)" >&2
     exit 2
 }
 
 [ $# -eq 1 ] || usage
 DEB_FLAVOR="$1"
+case "${DEB_FLAVOR}" in
+    bullseye|bookworm|trixie) ;;
+    *) usage ;;
+esac
 
 # ----------------------------------------------------------------------------
 # 1. Build dependencies + deb-src entries
@@ -45,12 +51,13 @@ for f in /etc/apt/sources.list.d/*.sources; do
     [ -e "$f" ] || continue
     sed -i 's/^Types: deb$/Types: deb deb-src/' "$f"
 done
-# classic sources (buster/bullseye archive + snapshot lines)
+# classic sources (buster/bullseye archive + snapshot lines); skip files
+# that already carry deb-src entries (our docker images do)
 for f in /etc/apt/sources.list /etc/apt/sources.list.d/*.list; do
     [ -e "$f" ] || continue
     grep -q '^deb ' "$f" || continue
-    sed -n 's/^deb /deb-src /p' "$f" >> "$f.new"
-    cat "$f.new" >> "$f" && rm -f "$f.new"
+    grep -q '^deb-src ' "$f" && continue
+    sed -n 's/^deb /deb-src /p' "$f" >> "$f"
 done
 
 apt-get update -qq
@@ -110,24 +117,40 @@ for p in "${PATCH_DIR}"/*.patch; do
 done
 
 # ----------------------------------------------------------------------------
-# 4. Packaging changes: allow +aufsN revisions, single aufs-amd64 flavour,
-#    changelog entry
+# 4. Packaging changes: single aufs-amd64 flavour, unsigned, changelog entry
+#    Trixie (6.12) uses defines.toml; bullseye/bookworm use the INI layout.
 # ----------------------------------------------------------------------------
 
-DEFINES=debian/config/defines.toml
-# allow a "+aufsN" suffix in the debian revision for every release regex
-python3 - <<'EOF'
+if [ -f debian/config/defines.toml ]; then
+    # allow a "+aufsN" suffix in the debian revision for every release regex
+    python3 - <<'EOF'
 import re
 p = 'debian/config/defines.toml'
 s = open(p).read()
 s = re.sub(r"(revision_regex = '.*)'", r"\1(\\+aufs\\d+)?'", s)
 open(p, 'w').write(s)
 EOF
-grep -n 'revision_regex' "${DEFINES}"
+    grep -n 'revision_regex' debian/config/defines.toml
+    cp "${PATCH_DIR}/amd64-defines.toml" debian/config/amd64/defines.toml
+else
+    # INI config: per-arch flavour list + full arch defines (carries the
+    # aufs-amd64 description section and signed-code: false)
+    cp "${PATCH_DIR}/amd64-none-defines" debian/config/amd64/none/defines
+    cp "${PATCH_DIR}/amd64-defines" debian/config/amd64/defines
+    # disable the rt featureset so it is not built as a second kernel;
+    # bullseye already ships the section, bookworm needs it appended
+    if grep -q '^\[featureset-rt_base\]' debian/config/defines; then
+        sed -i '/^\[featureset-rt_base\]/,/^\[/ s/^enabled: true/enabled: false/' \
+            debian/config/defines
+    else
+        printf '\n[featureset-rt_base]\nenabled: false\n' >> debian/config/defines
+    fi
+fi
 
-cp "${PATCH_DIR}/amd64-defines.toml" debian/config/amd64/defines.toml
-
-# changelog: increment +aufsN if already present
+# changelog: increment +aufsN if already present.
+# NOTE: the changelog distribution must be the release codename itself
+# (bullseye/bookworm/trixie); old gencontrol rejects "+aufsN" revisions
+# for *-security distributions.
 if echo "${SRCVER}" | grep -q '+aufs'; then
     n="$(echo "${SRCVER}" | sed -E 's/.*\+aufs([0-9]+).*/\1/')"
     NEWREV="$(echo "${SRCVER}" | sed -E 's/\+aufs[0-9]+//')+aufs$((n+1))"

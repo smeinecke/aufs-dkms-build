@@ -15,6 +15,19 @@ case "$(. /etc/os-release && echo "${VERSION_CODENAME}")" in
         echo 'Acquire::Check-Valid-Until "false";' \
             | sudo tee /etc/apt/apt.conf.d/99_archive >/dev/null
         ;;
+    bullseye)
+        # archive.debian.org carries bullseye main/-updates only; the
+        # debian-security dist was removed with the EOL migration, but the
+        # cloud image ships deb11u14 libc — pin the dated security snapshot
+        # (same source as docker/Dockerfile) so build-essential resolves
+        printf '%s\n' \
+            'deb http://archive.debian.org/debian bullseye main' \
+            'deb http://archive.debian.org/debian bullseye-updates main' \
+            'deb http://snapshot.debian.org/archive/debian-security/20260901T000000Z bullseye-security main' \
+            | sudo tee /etc/apt/sources.list >/dev/null
+        echo 'Acquire::Check-Valid-Until "false";' \
+            | sudo tee /etc/apt/apt.conf.d/99_archive >/dev/null
+        ;;
 esac
 
 sudo apt-get update -qq

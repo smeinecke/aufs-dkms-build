@@ -1,0 +1,46 @@
+Description: Adapt to backported vfs_rename(struct renamedata *) API
+ Debian backported the upstream vfs_rename() signature change (upstream
+ v5.12) into bullseye's 5.10 kernels. Extend probe.sh to detect the
+ renamedata signature in the target headers and switch the vfsub_rename()
+ call site to build a struct renamedata when present.
+ .
+ Only applied for aufs 4.x/5.x module source (aufs 6.x branches already
+ use the renamedata form); build.sh appends it to debian/patches/series
+ for VERSION_TAGs 4.* and 5.*.
+Author: Stefan Meinecke <meinecke@greensec.de>
+Forwarded: not-needed
+Last-Update: 2026-10-01
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/probe.sh
++++ b/probe.sh
+@@ -14,6 +14,7 @@
+ 
+ hdr fs.h     | grep -qw 'setfl'          || printf ' %s' '-DAUFS_NO_FOP_SETFL'
+ hdr splice.h | grep -qw 'do_splice_from' || printf ' %s' '-DAUFS_NO_DO_SPLICE_FROM'
++hdr fs.h     | grep -q 'vfs_rename(struct renamedata' && printf ' %s' '-DAUFS_RENAME_DATA'
+ 
+ # aufs needs kernel-internal symbols that are only exported when the
+ # kernel is built with aufs-standalone.patch (as in Debian buster's
+--- a/fs/aufs/vfsub.c
++++ b/fs/aufs/vfsub.c
+@@ -417,8 +417,19 @@
+ 		goto out;
+ 
+ 	lockdep_off();
++#ifdef AUFS_RENAME_DATA
++	err = vfs_rename(&(struct renamedata){
++		.old_dir	= src_dir,
++		.old_dentry	= src_dentry,
++		.new_dir	= dir,
++		.new_dentry	= path->dentry,
++		.delegated_inode = delegated_inode,
++		.flags		= flags,
++	});
++#else
+ 	err = vfs_rename(src_dir, src_dentry, dir, path->dentry,
+ 			 delegated_inode, flags);
++#endif
+ 	lockdep_on();
+ 	if (!err) {
+ 		int did;

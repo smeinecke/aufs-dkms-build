@@ -41,7 +41,7 @@ jobs:
       matrix:
         include:
           - { os-version: buster,   version_tag: "4.19" }
-          - { os-version: bullseye, version_tag: "5.10" }
+          - { os-version: bullseye, version_tag: "5.10.140" }
           - { os-version: bookworm, version_tag: "6.1" }
           - { os-version: trixie,   version_tag: "6.12" }
     steps:
@@ -102,7 +102,9 @@ jobs:
       - name: Fetch buster cloud image
         run: |
           base="https://cloud.debian.org/images/cloud/buster/latest"
-          curl -fsSL -o buster.qcow2 "${base}/debian-10-generic-amd64.qcow2"
+          # keep the upstream filename: SHA512SUMS references it by name
+          curl -fsSL -o debian-10-generic-amd64.qcow2 \
+            "${base}/debian-10-generic-amd64.qcow2"
           curl -fsSL "${base}/SHA512SUMS" \
             | grep 'debian-10-generic-amd64\.qcow2$' | sha512sum -c -
       - name: Boot VM
@@ -114,7 +116,7 @@ jobs:
           cloud-localds seed.iso user-data meta-data
           accel=tcg; [ -w /dev/kvm ] && accel=kvm
           qemu-system-x86_64 -accel "${accel}" -m 2048 -smp 2 -display none \
-            -drive file=buster.qcow2,if=virtio,format=qcow2,snapshot=on \
+            -drive file=debian-10-generic-amd64.qcow2,if=virtio,format=qcow2,snapshot=on \
             -drive file=seed.iso,if=virtio,format=raw,media=cdrom \
             -netdev user,id=n0,hostfwd=tcp:127.0.0.1:2222-:22 \
             -device virtio-net-pci,netdev=n0 &
@@ -138,23 +140,31 @@ jobs:
         if: always()
         run: pkill -f qemu-system-x86_64 || true
 
-  integration-trixie:
-    # Real end-to-end test on the patched kernel: boot a trixie cloud VM on
-    # the stock kernel, install the aufs-enabled kernel packages built by
+  integration-kernel:
+    # Real end-to-end test on the patched kernel: boot a cloud VM on the
+    # stock kernel, install the aufs-enabled kernel packages published by
     # build-kernel.yml, kexec into the aufs-amd64 kernel, then install the
-    # dkms deb, load the module and exercise a union mount.
-    name: Integration test (trixie, aufs kernel)
+    # dkms deb, load the module and exercise a union mount. Skips cleanly
+    # until the first kernel-* release for a flavor exists.
+    name: Integration test (${{ matrix.os-version }}, aufs kernel)
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os-version: bullseye, image: debian-11-generic-amd64.qcow2, port: 2224 }
+          - { os-version: bookworm, image: debian-12-generic-amd64.qcow2, port: 2225 }
+          - { os-version: trixie,   image: debian-13-generic-amd64.qcow2, port: 2226 }
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Download trixie aufs package
+      - name: Download ${{ matrix.os-version }} aufs package
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: packages-ci-trixie
+          name: packages-ci-${{ matrix.os-version }}
           path: packages
       - name: Fetch latest aufs kernel packages
         id: krel
@@ -163,9 +173,9 @@ jobs:
         run: |
           tag="$(gh release list --repo "${GITHUB_REPOSITORY}" \
             --json tagName --limit 200 \
-            --jq '[.[].tagName | select(startswith("kernel-trixie-"))] | first')"
+            --jq "[.[].tagName | select(startswith(\"kernel-${{ matrix.os-version }}-\"))] | first")"
           if [ -z "${tag}" ] || [ "${tag}" = "null" ]; then
-            echo "::notice::no kernel-trixie-* release published yet, skipping VM test"
+            echo "::notice::no kernel-${{ matrix.os-version }}-* release published yet, skipping VM test"
             echo "found=false" >> "${GITHUB_OUTPUT}"
             exit 0
           fi
@@ -179,32 +189,34 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq qemu-system-x86 qemu-utils cloud-image-utils
-      - name: Fetch trixie cloud image
+      - name: Fetch ${{ matrix.os-version }} cloud image
         if: steps.krel.outputs.found == 'true'
         run: |
-          base="https://cloud.debian.org/images/cloud/trixie/latest"
-          curl -fsSL -o trixie.qcow2 "${base}/debian-13-generic-amd64.qcow2"
+          base="https://cloud.debian.org/images/cloud/${{ matrix.os-version }}/latest"
+          # keep the upstream filename: SHA512SUMS references it by name
+          curl -fsSL -o "${{ matrix.image }}" "${base}/${{ matrix.image }}"
           curl -fsSL "${base}/SHA512SUMS" \
-            | grep 'debian-13-generic-amd64\.qcow2$' | sha512sum -c -
+            | grep '${{ matrix.image }}$' | sha512sum -c -
       - name: Boot VM (stock kernel)
         if: steps.krel.outputs.found == 'true'
         run: |
           ssh-keygen -t ed25519 -N '' -f vm_key -q
           printf '#cloud-config\nssh_authorized_keys:\n  - %s\n' \
             "$(cat vm_key.pub)" > user-data
-          printf 'instance-id: aufs-ci-trixie\nlocal-hostname: aufs-ktest\n' > meta-data
+          printf 'instance-id: aufs-ci-%s\nlocal-hostname: aufs-ktest\n' \
+            "${{ matrix.os-version }}" > meta-data
           cloud-localds seed.iso user-data meta-data
           accel=tcg; [ -w /dev/kvm ] && accel=kvm
           qemu-system-x86_64 -accel "${accel}" -m 2048 -smp 2 -display none \
-            -drive file=trixie.qcow2,if=virtio,format=qcow2,snapshot=on \
+            -drive file=${{ matrix.image }},if=virtio,format=qcow2,snapshot=on \
             -drive file=seed.iso,if=virtio,format=raw,media=cdrom \
-            -netdev user,id=n0,hostfwd=tcp:127.0.0.1:2223-:22 \
+            -netdev user,id=n0,hostfwd=tcp:127.0.0.1:${{ matrix.port }}-:22 \
             -device virtio-net-pci,netdev=n0 &
           for _ in $(seq 1 60); do
             sleep 5
             ssh -i vm_key -o StrictHostKeyChecking=no \
               -o UserKnownHostsFile=/dev/null -o ConnectTimeout=5 \
-              -p 2223 debian@127.0.0.1 true 2>/dev/null && exit 0
+              -p ${{ matrix.port }} debian@127.0.0.1 true 2>/dev/null && exit 0
           done
           echo "::error::VM did not accept SSH within timeout"
           exit 1
@@ -212,10 +224,20 @@ jobs:
         if: steps.krel.outputs.found == 'true'
         run: |
           ssho=(-i vm_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null)
-          scp "${ssho[@]}" -P 2223 kernel/*.deb packages/aufs-dkms_*_all.deb \
+          scp "${ssho[@]}" -P ${{ matrix.port }} kernel/*.deb packages/aufs-dkms_*_all.deb \
             scripts/integration-test.sh debian@127.0.0.1:~/
-          ssh "${ssho[@]}" -p 2223 debian@127.0.0.1 '
+          ssh "${ssho[@]}" -p ${{ matrix.port }} debian@127.0.0.1 '
             set -e
+            case "$(. /etc/os-release && echo "${VERSION_CODENAME}")" in
+              bullseye)
+                printf "%s\n" \
+                  "deb http://archive.debian.org/debian bullseye main" \
+                  "deb http://archive.debian.org/debian bullseye-updates main" \
+                  "deb http://snapshot.debian.org/archive/debian-security/20260901T000000Z bullseye-security main" \
+                  | sudo tee /etc/apt/sources.list >/dev/null
+                echo "Acquire::Check-Valid-Until \"false\";" \
+                  | sudo tee /etc/apt/apt.conf.d/99_archive >/dev/null ;;
+            esac
             sudo apt-get update -qq
             sudo apt-get install -y -qq ./linux-image-*-aufs-amd64_*.deb \
               ./linux-headers-*-aufs-amd64_*.deb ./linux-headers-*-common_*_all.deb \
@@ -227,7 +249,7 @@ jobs:
           # kexec -e drops the SSH connection; wait for the new kernel
           for _ in $(seq 1 60); do
             sleep 5
-            out="$(ssh "${ssho[@]}" -o ConnectTimeout=5 -p 2223 \
+            out="$(ssh "${ssho[@]}" -o ConnectTimeout=5 -p ${{ matrix.port }} \
               debian@127.0.0.1 'uname -r' 2>/dev/null)" && {
               echo "running kernel: ${out}"
               case "${out}" in *aufs*) exit 0 ;; *) exit 1 ;; esac
@@ -239,7 +261,7 @@ jobs:
         if: steps.krel.outputs.found == 'true'
         run: |
           ssh -i vm_key -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null -p 2223 \
+            -o UserKnownHostsFile=/dev/null -p ${{ matrix.port }} \
             debian@127.0.0.1 'bash integration-test.sh'
       - name: Stop VM
         if: always()

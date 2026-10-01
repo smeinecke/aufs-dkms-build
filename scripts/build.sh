@@ -61,6 +61,13 @@ cd aufs-dkms
 cp -r "${SCRIPTDIR}/debian" debian
 echo "${DEBHELPER_COMPAT}" > debian/compat
 sed -i "s|#KERNEL_REGEX#|${KERNEL_REGEX}|" debian/aufs-dkms.dkms
+
+# aufs 4.x/5.x sources still call the pre-renamedata vfs_rename() form;
+# aufs 6.x already uses struct renamedata, so the patch only applies to
+# the older branches.
+case "${KVER_MAJOR}" in
+    4|5) echo "0003-vfs-rename-renamedata.patch" >> debian/patches/series ;;
+esac
 cat > debian/changelog <<EOF
 aufs-dkms (${VERSION_TAG}-${DEB_FLAVOR}) ${DEB_FLAVOR}; urgency=medium
 

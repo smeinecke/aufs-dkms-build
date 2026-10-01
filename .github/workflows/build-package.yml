@@ -15,7 +15,7 @@ on:
           - 'buster'
         required: true
       version_tag:
-        description: 'Version Tag'
+        description: 'Version Tag (trixie=6.12, bookworm=6.1, bullseye=5.10.140, buster=4.19)'
         default: '6.12'
         required: true
       release:

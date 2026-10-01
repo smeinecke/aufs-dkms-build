@@ -9,7 +9,7 @@ Supported releases:
 |---------|----------|---------------|---------------|
 | 13      | trixie   | 6.12          | `6.12`        |
 | 12      | bookworm | 6.1           | `6.1`         |
-| 11      | bullseye (EOL, archive.debian.org) | 5.10 | `5.10` |
+| 11      | bullseye (EOL, archive.debian.org) | 5.10 | `5.10.140` |
 | 10      | buster (EOL, archive.debian.org) | 4.19 | `4.19` |
 
 `VERSION_TAG` selects the `aufs<VERSION_TAG>` upstream branch (from

@@ -23,7 +23,7 @@ jobs:
       matrix:
         include:
           - { os-version: buster,   version_tag: "4.19" }
-          - { os-version: bullseye, version_tag: "5.10" }
+          - { os-version: bullseye, version_tag: "5.10.140" }
           - { os-version: bookworm, version_tag: "6.1" }
           - { os-version: trixie,   version_tag: "6.12" }
     container:

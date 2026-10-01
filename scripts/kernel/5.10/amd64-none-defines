@@ -1,0 +1,4 @@
+[base]
+flavours:
+ aufs-amd64
+default-flavour: aufs-amd64
