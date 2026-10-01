@@ -1,14 +1,16 @@
 Source: aufs-dkms
 Section: kernel
 Priority: optional
-Maintainer: Pablo Ruiz <pablo.ruiz@gmail.com>
-Build-Depends: debhelper (>= 12), dkms, dh-dkms, linux-kbuild-6.1
-Homepage: http://aufs.sourceforge.net/
+Maintainer: Stefan Meinecke <meinecke@greensec.de>
+Build-Depends: debhelper (>= 12), dh-dkms | dkms
+Standards-Version: 4.7.0
+Homepage: https://github.com/sfjro/aufs-standalone
 
 Package: aufs-dkms
 Architecture: all
 Multi-Arch: foreign
 Depends: ${misc:Depends}
+Suggests: aufs-tools
 Description: DKMS files to build and install aufs
  The aufs driver provides a union mount for Linux filesystems. It allows one
  to virtually merge the contents of several directories and/or stack them, so

@@ -1,13 +1,14 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: aufs4-standalone
-Source: https://github.com/sfjro/aufs4-standalone
+Upstream-Name: aufs-standalone
+Source: https://github.com/sfjro/aufs-standalone
 
 Files:     *
-Copyright: 2005-2016 Junjiro R. Okajima <hooanon05g@gmail.com>
+Copyright: 2005-2025 Junjiro R. Okajima <hooanon05g@gmail.com>
 License:   GPL-2.0+
 
 Files:     debian/*
 Copyright: 2016 Jan Luca Naumann <j.naumann@fu-berlin.de>
+           2023-2026 Stefan Meinecke <meinecke@greensec.de>
 License:   GPL-2.0+
 
 License:   GPL-2.0+

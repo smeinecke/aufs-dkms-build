@@ -5,11 +5,15 @@ on:
     inputs:
       version_tag:
         description: 'Version Tag'
-        default: '6.1'
+        default: '6.12'
         required: true
-  create:
+  push:
     tags:
       - '*'
+
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build packages
@@ -17,74 +21,85 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os-version: ["buster", "bullseye", "bookworm"]
+        include:
+          - { os-version: buster,   version_tag: "4.19" }
+          - { os-version: bullseye, version_tag: "5.10" }
+          - { os-version: bookworm, version_tag: "6.1" }
+          - { os-version: trixie,   version_tag: "6.12" }
     container:
       image: "smeinecke/aufs-dkms-build:${{ matrix.os-version }}"
-      options: --privileged --device /dev/fuse
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Set env
-        if: startsWith(github.ref, 'refs/tags/')
-        run: echo "VERSION_TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-      - name: Set env
-        if: github.event.inputs.version_tag != ''
-        run: echo "VERSION_TAG=${{ github.event.inputs.version_tag }}" >> $GITHUB_ENV
-      - name: Cache build
-        uses: actions/cache@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          path: |
-            cache
-          key: "${{ matrix.os-version }}-build-cache-${{ env.VERSION_TAG }}"
-          restore-keys: |
-            "${{ matrix.os-version }}-build-cache-"
+          persist-credentials: false
+      - name: Set env (flavor default)
+        run: echo "VERSION_TAG=${{ matrix.version_tag }}" >> "$GITHUB_ENV"
+      - name: Set env (git tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        run: echo "VERSION_TAG=${GITHUB_REF#refs/*/}" >> "$GITHUB_ENV"
+      - name: Set env (workflow input)
+        if: github.event.inputs.version_tag != ''
+        run: echo "VERSION_TAG=${{ github.event.inputs.version_tag }}" >> "$GITHUB_ENV"
       - name: Run build script
-        run: ./scripts/build.sh
+        run: |
+          series="$(cut -d. -f1-2 <<<"${VERSION_TAG}")"
+          case "${DEB_FLAVOR}" in
+            buster)   want=4.19 ;;
+            bullseye) want=5.10 ;;
+            bookworm) want=6.1 ;;
+            trixie)   want=6.12 ;;
+          esac
+          if [ "${series}" != "${want}" ]; then
+            echo "skipping ${DEB_FLAVOR}: tag ${VERSION_TAG} targets kernel ${series}"
+            touch .no-debs   # keep the artifact non-empty for add_release
+          else
+            ./scripts/build.sh
+          fi
         env:
           DEB_FLAVOR: "${{ matrix.os-version }}"
       - name: Upload deb files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: packages
-          path: ./*.deb
+          name: packages-${{ matrix.os-version }}
+          path: |
+            ./*.deb
+            ./.no-debs
   add_release:
     name: Add package to release
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        os-version: ["buster", "bullseye", "bookworm", "trixie"]
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: packages
+          pattern: "packages-${{ matrix.os-version }}"
+          path: packages
       - name: Display structure of downloaded files
-        run: ls -R
+        run: ls -la packages
       - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@e598afbe1493e6b1bafb1f389cabb956eab91231 # v3.0.3
+        if: startsWith(github.ref, 'refs/tags/') && hashFiles('packages/*.deb') != ''
         with:
-          files: ./*.deb
-      - name: Add buster release
-        uses: smeinecke/apt-repo-action@v2.1.4
+          files: packages/*.deb
+      - name: Add ${{ matrix.os-version }} package to apt repository
+        if: hashFiles('packages/*.deb') != ''
+        uses: smeinecke/apt-repo-action@b12d0c7cf1297211dbdf15c05b1dba5849ede9bb # v2.1.8
         with:
-          github_token: ${{ secrets.GH_PAT }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           repo_supported_arch: amd64
           repo_supported_version: |
             buster
             bullseye
+            bookworm
+            trixie
           file: |
-            *-buster_*.deb
-          file_target_version: buster
-          private_key: ${{ secrets.APT_SIGNING_KEY }}
-          key_passphrase: ""
-      - name: Add bullseye release
-        uses: smeinecke/apt-repo-action@v2.1.4
-        with:
-          github_token: ${{ secrets.GH_PAT }}
-          repo_supported_arch: amd64
-          repo_supported_version: |
-            buster
-            bullseye
-          file: |
-            *-bullseye_*.deb
-          file_target_version: bullseye
+            packages/*.deb
+          file_target_version: ${{ matrix.os-version }}
           private_key: ${{ secrets.APT_SIGNING_KEY }}
           key_passphrase: ""

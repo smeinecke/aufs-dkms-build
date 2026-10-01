@@ -1,0 +1,79 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # weekly — catches upstream aufs branch changes and Debian kernel drift
+    - cron: '17 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Static checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Shell syntax check
+        run: bash -n scripts/build.sh
+      - name: Lint workflows
+        run: >
+          docker run --rm -v "${{ github.workspace }}:/repo" -w /repo
+          rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667
+          -oneline
+  build:
+    name: Build ${{ matrix.os-version }} package
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os-version: buster,   version_tag: "4.19" }
+          - { os-version: bullseye, version_tag: "5.10" }
+          - { os-version: bookworm, version_tag: "6.1" }
+          - { os-version: trixie,   version_tag: "6.12" }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build image, package, dkms smoke test
+        run: |
+          docker build -t "aufs-build:${{ matrix.os-version }}" \
+            --build-arg "FLAVOR=${{ matrix.os-version }}" docker/
+          docker run --rm -w /src \
+            -e "DEB_FLAVOR=${{ matrix.os-version }}" \
+            -e "VERSION_TAG=${{ matrix.version_tag }}" \
+            -v "${{ github.workspace }}:/src" \
+            "aufs-build:${{ matrix.os-version }}" bash -ec '
+              ./scripts/build.sh
+              apt-get update -qq
+              apt-get install -y -qq --no-install-recommends linux-headers-amd64 kmod
+              dpkg -i ./aufs-dkms_*.deb || true
+              if find /var/lib/dkms -name aufs.ko -print -quit | grep -q .; then
+                echo "aufs.ko built and installed for this kernel"
+              elif grep -rqs "does not export the symbols" /var/lib/dkms/; then
+                echo "stock kernel lacks aufs exports (expected on this release)"
+              else
+                echo "::error::unexpected dkms build failure"
+                find /var/lib/dkms -name make.log -exec tail -40 {} +
+                exit 1
+              fi'
+      - name: Upload packages
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: packages-ci-${{ matrix.os-version }}
+          path: ./*.deb
+          if-no-files-found: ignore

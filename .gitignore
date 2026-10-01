@@ -53,6 +53,15 @@ dkms.conf
 
 packages/
 
+# build artifacts
+/aufs-standalone/
+/aufs-dkms/
+/aufs-dkms_*.orig.tar.*
+/*.deb
+/*.changes
+/*.buildinfo
+/cache/
+
 debian/*log
 debian/*.debhelper
 debian/*.substvars

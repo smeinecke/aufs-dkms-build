@@ -1,0 +1,14 @@
+Description: Disable CONFIG_AUFS_DEBUG in default module configuration
+ Upstream config.mk enables CONFIG_AUFS_DEBUG which compiles in debug
+ code (larger, slower module). Build the release flavour by default,
+ like the historic Debian aufs-dkms package did.
+Author: Stefan Meinecke <meinecke@greensec.de>
+Forwarded: not-needed
+Last-Update: 2026-10-01
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/config.mk
++++ b/config.mk
+@@ -20,1 +20,1 @@
+-CONFIG_AUFS_DEBUG = y
++CONFIG_AUFS_DEBUG =

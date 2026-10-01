@@ -1,0 +1,88 @@
+Description: Probe target kernel headers for backported VFS API changes
+ Debian backports upstream VFS API removals (f_op->setfl and
+ do_splice_from(), removed upstream in v6.15/v6.16) into its stable
+ kernels, so LINUX_VERSION_CODE checks cannot detect them. Add probe.sh
+ which inspects the actual headers of the kernel being built for and
+ emits -D flags, and add compat fallbacks at the affected call sites.
+Author: Stefan Meinecke <meinecke@greensec.de>
+Forwarded: not-needed
+Last-Update: 2026-10-01
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- /dev/null
++++ b/probe.sh
+@@ -0,0 +1,37 @@
++#!/bin/sh
++# Emit -D flags describing the VFS API of the target kernel headers.
++# $1 = kernel build dir (e.g. /lib/modules/VERSION/build). Debian keeps
++# the -common headers in a sibling dir reachable via the "source" link.
++
++kdir="$1"
++
++hdr() {
++	for d in "${kdir}" "$(dirname "${kdir}")/source"; do
++		f="$(readlink -f "${d}")/include/linux/$1"
++		[ -f "${f}" ] && { cat "${f}"; return; }
++	done
++}
++
++hdr fs.h     | grep -qw 'setfl'          || printf ' %s' '-DAUFS_NO_FOP_SETFL'
++hdr splice.h | grep -qw 'do_splice_from' || printf ' %s' '-DAUFS_NO_DO_SPLICE_FROM'
++
++# aufs needs kernel-internal symbols that are only exported when the
++# kernel is built with aufs-standalone.patch (as in Debian buster's
++# kernel); fail with a readable message instead of modpost errors
++symvers="${kdir}/Module.symvers"
++[ -f "${symvers}" ] || symvers="$(readlink -f "$(dirname "${kdir}")/source")/Module.symvers"
++if [ -f "${symvers}" ]; then
++	missing=""
++	for s in vfs_read vfs_write d_walk d_exchange do_truncate path_noexec \
++	    security_path_chmod security_path_rmdir security_path_symlink \
++	    security_file_permission; do
++		awk -v s="${s}" '$2 == s && $4 ~ /^EXPORT_SYMBOL/ {f=1} END {exit !f}' \
++		    "${symvers}" || missing="${missing} ${s}"
++	done
++	if [ -n "${missing}" ]; then
++		echo >&2 "probe.sh: target kernel does not export:${missing}"
++		echo >&2 "probe.sh: a kernel built with aufs-standalone.patch is required"
++		printf ' %s' '-DAUFS_MISSING_EXPORTS'
++	fi
++fi
++echo
+--- a/Makefile
++++ b/Makefile
+@@ -20,1 +20,6 @@
+-EXTRA_CFLAGS += ${AUFS_DEF_CONFIG}
++# distributors backport VFS API changes; probe the actual headers
++AUFS_PROBE_FLAGS := $(shell sh ${CURDIR}/probe.sh ${KDIR})
++EXTRA_CFLAGS += ${AUFS_DEF_CONFIG} ${AUFS_PROBE_FLAGS}
++ifneq (,$(findstring AUFS_MISSING_EXPORTS,${AUFS_PROBE_FLAGS}))
++$(error the target kernel does not export the symbols aufs requires, see above)
++endif
+ 
+--- a/fs/aufs/f_op.c
++++ b/fs/aufs/f_op.c
+@@ -735,1 +735,1 @@
+-static int aufs_setfl(struct file *file, unsigned long arg)
++static int __maybe_unused aufs_setfl(struct file *file, unsigned long arg)
+@@ -751,1 +753,5 @@
+-	err = setfl(/*unused fd*/-1, h_file, arg);
++#ifndef AUFS_NO_FOP_SETFL
++	err = setfl(/*unused fd*/-1, h_file, arg);
++#else
++	err = -EOPNOTSUPP;
++#endif
+@@ -782,1 +786,3 @@
+-	.setfl		= aufs_setfl,
++#ifndef AUFS_NO_FOP_SETFL
++	.setfl		= aufs_setfl,
++#endif /* AUFS_NO_FOP_SETFL */
+--- a/fs/aufs/vfsub.c
++++ b/fs/aufs/vfsub.c
+@@ -708,1 +708,5 @@
+-	err = do_splice_from(pipe, out, ppos, len, flags);
++#ifndef AUFS_NO_DO_SPLICE_FROM
++	err = do_splice_from(pipe, out, ppos, len, flags);
++#else
++	err = out->f_op->splice_write(pipe, out, ppos, len, flags);
++#endif
