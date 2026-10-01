@@ -61,6 +61,8 @@ packages/
 /*.changes
 /*.buildinfo
 /cache/
+/out/
+/linux-*/
 
 debian/*log
 debian/*.debhelper

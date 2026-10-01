@@ -1,0 +1,19 @@
+[[flavour]]
+name = "aufs-amd64"
+[flavour.defs]
+is_default = true
+[flavour.description]
+hardware = "64-bit PCs (aufs)"
+hardware_long = "PCs with AMD64, Intel 64 or VIA Nano processors, aufs enabled"
+
+[[featureset]]
+name = "none"
+
+[build]
+enable_signed = false
+enable_vdso = true
+kernel_file = "arch/x86/boot/bzImage"
+kernel_stem = "vmlinuz"
+
+[relations.image]
+suggests = ["grub-pc | grub-efi-amd64 | extlinux"]

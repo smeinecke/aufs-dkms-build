@@ -31,13 +31,43 @@ was built with upstream's
   exports all required symbols — the module builds and loads there.
 * Stock kernels of bullseye (5.10) and newer do **not** export them; the
   dkms build fails at install time with a message naming the missing
-  symbols. Use these packages on a kernel built with the aufs export
-  patches, or apply the patches to your kernel build.
+  symbols. Use the aufs-enabled kernel packages below, or apply the
+  patches to your own kernel build.
 
 The package also probes the target kernel headers at build time
 (`probe.sh`) and adapts to distributor backports of upstream VFS API
 changes (e.g. the `f_op->setfl`/`do_splice_from` removals Debian
 backported into trixie's 6.12).
+
+## aufs-enabled kernel packages
+
+For releases newer than buster this repository builds patched Debian
+kernel packages in addition to `aufs-dkms`: an extra `aufs-amd64` flavour
+of the regular Debian kernel, with `aufs{4,5,6}-{base,mmap,standalone}.patch`
+applied so the required symbols are exported. aufs itself stays in the
+dkms package — nothing else about the kernel changes.
+
+Packages are named `linux-image-<kver>-aufs-amd64` and coexist with the
+stock kernel (separate `/lib/modules` tree, separate GRUB entries), so the
+stock kernel remains available as a fallback.
+
+```
+# after adding the apt repo below:
+apt-get install linux-image-aufs-amd64 linux-headers-aufs-amd64 aufs-dkms
+reboot   # and select the -aufs-amd64 kernel
+```
+
+Or download the `linux-image`/`linux-headers`/`linux-kbuild` debs from the
+latest `kernel-<codename>-*` release on GitHub and `apt-get install ./*.deb`.
+
+Notes:
+
+* amd64 only. The packages are **unsigned**: disable Secure Boot or set up
+  your own MOK signing.
+* The flavour tracks Debian's kernel ABI; a Debian point release or
+  security update produces a new `+aufsN` build automatically (weekly CI).
+* `scripts/build-kernel.sh <codename>` builds these packages locally;
+  per-series patch sets live in `scripts/kernel/<series>/`.
 
 ## Add Repo
 ```

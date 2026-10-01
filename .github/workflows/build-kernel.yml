@@ -1,0 +1,130 @@
+name: build kernel (aufs)
+
+# Builds Debian kernel packages with the upstream aufs export patches applied
+# ("aufs-amd64" flavour). These kernels export the symbols the aufs-dkms
+# module needs, which stock Debian kernels >= 5.10 no longer export.
+#
+# Runs weekly so new Debian point releases get rebuilt automatically, and on
+# changes to the kernel-build assets. Scheduled/dispatched runs also publish
+# the packages to a GitHub release and the apt repository.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '37 3 * * 3'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/kernel/**'
+      - 'scripts/build-kernel.sh'
+      - '.github/workflows/build-kernel.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  kernel:
+    name: aufs kernel ${{ matrix.os-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # one entry per Debian release with a patch set in scripts/kernel/
+          - { os-version: trixie }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # a full Debian kernel build needs ~25 GB
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@ceedf095f4ec1a097402bc6bd80831f2e1a6fde6 # v2.0.0
+        with:
+          tool-cache: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - name: Build kernel packages
+        run: |
+          docker build -t "aufs-build:${{ matrix.os-version }}" \
+            --build-arg "FLAVOR=${{ matrix.os-version }}" docker/
+          mkdir -p out
+          docker run --rm -w /work \
+            -e "DEB_FLAVOR=${{ matrix.os-version }}" \
+            -e "WORK_DIR=/work/out" \
+            -e "KERNEL_CONFIG=/work/scripts/kernel" \
+            -v "${{ github.workspace }}:/work" \
+            "aufs-build:${{ matrix.os-version }}" \
+            bash scripts/build-kernel.sh "${{ matrix.os-version }}"
+
+      # keep only what users need: image + headers + kbuild (drops the ~1 GB
+      # -dbg package, dbgsym, tools, source and libc-dev)
+      - name: Collect installable packages
+        run: |
+          mkdir -p packages
+          sudo mv -t packages \
+            out/linux-image-*-aufs-amd64_*.deb out/linux-image-aufs-amd64_*.deb \
+            out/linux-headers-*-aufs-amd64_*.deb out/linux-headers-aufs-amd64_*.deb \
+            out/linux-headers-*-common_*_all.deb out/linux-kbuild-*_amd64.deb
+          ls -la packages/
+
+      - name: Upload kernel packages
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: kernel-${{ matrix.os-version }}
+          path: packages/*.deb
+          if-no-files-found: ignore
+
+  publish:
+    name: Publish kernel packages
+    needs: kernel
+    # only scheduled / manual runs publish; validation pushes just build
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os-version: trixie }
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: "kernel-${{ matrix.os-version }}"
+          path: packages
+
+      - name: Determine kernel version
+        run: |
+          img="$(find packages -name 'linux-image-*-aufs-amd64_*.deb' | head -1)"
+          krel="$(basename "${img}" | sed -E 's/linux-image-(.*)-aufs-amd64_.*/\1/')"
+          kver="$(basename "${img}" | sed -E 's/.*_([0-9][^_]*)_amd64.deb/\1/')"
+          echo "KREL=${krel}" >> "${GITHUB_ENV}"
+          echo "KVER=${kver}" >> "${GITHUB_ENV}"
+
+      - name: Release
+        uses: softprops/action-gh-release@e598afbe1493e6b1bafb1f389cabb956eab91231 # v3.0.3
+        with:
+          tag_name: "kernel-${{ matrix.os-version }}-${{ env.KVER }}"
+          name: "aufs kernel ${{ env.KREL }} (${{ matrix.os-version }})"
+          files: packages/*.deb
+
+      - name: Add ${{ matrix.os-version }} kernel packages to apt repository
+        uses: smeinecke/apt-repo-action@b12d0c7cf1297211dbdf15c05b1dba5849ede9bb # v2.1.8
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          repo_supported_arch: amd64
+          repo_supported_version: ${{ matrix.os-version }}
+          file: |
+            packages/*.deb
+          file_target_version: ${{ matrix.os-version }}
+          private_key: ${{ secrets.APT_SIGNING_KEY }}
+          key_passphrase: ""
