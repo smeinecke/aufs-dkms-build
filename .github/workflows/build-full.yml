@@ -111,7 +111,7 @@ jobs:
           path: artifacts
       - name: Add buster package to apt repository
         if: hashFiles('artifacts/packages-buster/*.deb') != ''
-        uses: smeinecke/apt-repo-action@80277dede047fa054a3d11968b133bafe8cd04ff # v2.2.0
+        uses: smeinecke/apt-repo-action@f7bfcf90edda137bd1c808863ae2bc24cea959df # v2.2.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           repo_supported_arch: amd64
@@ -128,7 +128,7 @@ jobs:
           key_passphrase: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
       - name: Add bullseye package to apt repository
         if: hashFiles('artifacts/packages-bullseye/*.deb') != ''
-        uses: smeinecke/apt-repo-action@80277dede047fa054a3d11968b133bafe8cd04ff # v2.2.0
+        uses: smeinecke/apt-repo-action@f7bfcf90edda137bd1c808863ae2bc24cea959df # v2.2.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           repo_supported_arch: amd64
@@ -145,7 +145,7 @@ jobs:
           key_passphrase: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
       - name: Add bookworm package to apt repository
         if: hashFiles('artifacts/packages-bookworm/*.deb') != ''
-        uses: smeinecke/apt-repo-action@80277dede047fa054a3d11968b133bafe8cd04ff # v2.2.0
+        uses: smeinecke/apt-repo-action@f7bfcf90edda137bd1c808863ae2bc24cea959df # v2.2.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           repo_supported_arch: amd64
@@ -162,7 +162,7 @@ jobs:
           key_passphrase: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
       - name: Add trixie package to apt repository
         if: hashFiles('artifacts/packages-trixie/*.deb') != ''
-        uses: smeinecke/apt-repo-action@80277dede047fa054a3d11968b133bafe8cd04ff # v2.2.0
+        uses: smeinecke/apt-repo-action@f7bfcf90edda137bd1c808863ae2bc24cea959df # v2.2.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           repo_supported_arch: amd64
