@@ -123,6 +123,31 @@ jobs:
           name: "aufs kernel ${{ env.KREL }} (${{ matrix.os-version }})"
           files: packages/*.deb
 
+      # The aufs-dkms tag release must be self-contained: on bullseye+ the
+      # stock kernel lacks the required exports, so ship the patched kernel
+      # debs there as well. Refreshed on every kernel rebuild, so the tag
+      # always carries the newest Debian point-release kernel.
+      - name: Attach kernel debs to the aufs-dkms release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          case "${{ matrix.os-version }}" in
+            bullseye) tag=5.10.140 ;;
+            bookworm) tag=6.1 ;;
+            trixie)   tag=6.12 ;;
+            *) tag="" ;;
+          esac
+          [ -n "${tag}" ] || exit 0
+          if ! gh release view "${tag}" >/dev/null 2>&1; then
+            echo "release ${tag} does not exist yet; skipping"
+            exit 0
+          fi
+          # drop older kernel debs first so only the newest point release stays
+          gh release view "${tag}" --json assets --jq '.assets[].name' \
+            | grep '^linux-' \
+            | while read -r a; do gh release delete-asset "${tag}" "$a" -y; done || true
+          gh release upload "${tag}" packages/*.deb --clobber
+
       - name: Add ${{ matrix.os-version }} kernel packages to apt repository
         uses: smeinecke/apt-repo-action@b12d0c7cf1297211dbdf15c05b1dba5849ede9bb # v2.1.8
         with:
