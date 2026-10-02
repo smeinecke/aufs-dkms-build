@@ -53,7 +53,9 @@ jobs:
           esac
           if [ "${series}" != "${want}" ]; then
             echo "skipping ${DEB_FLAVOR}: tag ${VERSION_TAG} targets kernel ${series}"
-            touch .no-debs   # keep the artifact non-empty for add_release
+            # keep the artifact non-empty for add_release; must NOT be a dotfile
+            # (upload-artifact skips hidden files unless include-hidden-files)
+            touch no-debs
           else
             ./scripts/build.sh
           fi
@@ -65,7 +67,7 @@ jobs:
           name: packages-${{ matrix.os-version }}
           path: |
             ./*.deb
-            ./.no-debs
+            ./no-debs
   add_release:
     name: Add package to release
     needs: build
@@ -103,4 +105,5 @@ jobs:
             packages/*.deb
           file_target_version: ${{ matrix.os-version }}
           private_key: ${{ secrets.APT_SIGNING_KEY }}
-          key_passphrase: ""
+          public_key: ${{ secrets.APT_SIGNING_PUBKEY }}
+          key_passphrase: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
