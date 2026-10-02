@@ -1,18 +1,19 @@
 Package: aufs-dkms
-Version: 5.10-buster
+Version: 4.19-buster
 Architecture: all
-Maintainer: Pablo Ruiz <pablo.ruiz@gmail.com>
-Installed-Size: 878
+Maintainer: Stefan Meinecke <meinecke@greensec.de>
+Installed-Size: 918
 Depends: dkms (>= 2.1.0.0)
+Suggests: aufs-tools
 Multi-Arch: foreign
-Homepage: http://aufs.sourceforge.net/
+Homepage: https://github.com/sfjro/aufs-standalone
 Priority: optional
 Section: kernel
-Filename: pool/main/a/aufs-dkms/aufs-dkms_5.10-buster_all.deb
-Size: 148772
-SHA256: 9076bc0bc1f9874099392cf2bac022fe36ffe64995e27b2cebe1681c3970f6a2
-SHA1: 405777fd1cd05503a9857217a4cdbcef078ca147
-MD5sum: 2138f47105a6375deceb0a58cb02d8ff
+Filename: pool/main/a/aufs-dkms/aufs-dkms_4.19-buster_all.deb
+Size: 157640
+SHA256: 7eb179ef76dac82493fc5a2a6538ddda19846f06c9a7688b37a22c9785f19396
+SHA1: 090747d4c6151384b564b8b6214ac77283414275
+MD5sum: 70497c6b750ea0f160ae4682a13165bd
 Description: DKMS files to build and install aufs
  The aufs driver provides a union mount for Linux filesystems. It allows one
  to virtually merge the contents of several directories and/or stack them, so
