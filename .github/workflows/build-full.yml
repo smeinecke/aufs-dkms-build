@@ -72,6 +72,9 @@ jobs:
     name: Add package to release
     needs: build
     runs-on: ubuntu-latest
+    # all apt publishes across workflows push the same gh-pages branch;
+    # serialize them so concurrent tag runs don't race on push
+    concurrency: apt-repo-publish
     permissions:
       contents: write
     strategy:

@@ -91,6 +91,8 @@ jobs:
     # only scheduled / manual runs publish; validation pushes just build
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    # serialize apt/gh-pages pushes across matrix legs and workflows
+    concurrency: apt-repo-publish
     permissions:
       contents: write
     strategy:
