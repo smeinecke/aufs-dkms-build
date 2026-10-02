@@ -1,0 +1,7 @@
+{
+  "buster":   { "tag": "4.19",     "sha": "0f5cf9757022f1dc050623455a196140e4f63eaa" },
+  "bullseye": { "tag": "5.10.140", "sha": "0c55dd9dcf13d5de98218aca4b1a6ad1181acb33" },
+  "bookworm": { "tag": "6.1",      "sha": "bfd38ec481836d86de5686dadca02e072b4f0584" },
+  "trixie":   { "tag": "6.12.29",  "sha": "426bc8caa99da7bbe5c87142a9543dfe59b2772c" },
+  "notified_series": "6.12"
+}

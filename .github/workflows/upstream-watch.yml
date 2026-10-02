@@ -1,0 +1,35 @@
+name: upstream aufs watch
+
+# Weekly check whether the upstream aufs-standalone branches moved. For each
+# flavor whose source changed this dispatches build-full with
+# "version_tag=<branch-tag>[+<date>]", which builds the package, creates the
+# tag + GitHub release and pushes it into the apt repository.
+#
+# GITHUB_TOKEN cannot trigger tag-push workflows, but workflow_dispatch runs
+# are allowed, so the watch job dispatches rather than pushing tags.
+
+on:
+  schedule:
+    - cron: '41 5 * * 1'   # Mondays 05:41 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check upstream heads
+    runs-on: ubuntu-latest
+    # scheduled workflows also run on forks; keep them quiet there
+    if: github.repository == 'smeinecke/aufs-dkms-build'
+    permissions:
+      contents: write   # commit the state snapshot
+      actions: write    # dispatch build-full.yml
+      issues: write     # tracking issue for new upstream series
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Watch upstream branches and dispatch releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./scripts/watch-upstream.sh

@@ -16,9 +16,11 @@ case "${DEB_FLAVOR}" in
     *) die "Unknown DEB_FLAVOR '${DEB_FLAVOR}'" ;;
 esac
 
-# dkms BUILD_EXCLUSIVE_KERNEL regex from the first two version components;
-# double-escaped so it survives sed substitution into the dkms.conf template
-IFS=. read -r KVER_MAJOR KVER_MINOR _ <<<"${VERSION_TAG}"
+# VERSION_TAG may carry a "+<date>" rebuild suffix from automated re-releases
+# (e.g. "6.12+20251002"); the upstream branch and kernel regex use the base
+# tag, while the debian version keeps the full tag for version ordering.
+BASE_TAG="${VERSION_TAG%%+*}"
+IFS=. read -r KVER_MAJOR KVER_MINOR _ <<<"${BASE_TAG}"
 [[ "${KVER_MAJOR}" =~ ^[0-9]+$ && "${KVER_MINOR}" =~ ^[0-9]+$ ]] \
     || die "VERSION_TAG '${VERSION_TAG}' is not a kernel version"
 KERNEL_REGEX="^${KVER_MAJOR}\\\\.${KVER_MINOR}.*"
@@ -28,7 +30,7 @@ case "${KVER_MAJOR}" in
     4) AUFS_REPO="https://github.com/sfjro/aufs4-standalone" ;;
     *) AUFS_REPO="https://github.com/sfjro/aufs-standalone" ;;
 esac
-AUFS_BRANCH="aufs${VERSION_TAG}"
+AUFS_BRANCH="aufs${BASE_TAG}"
 
 git config --global advice.detachedHead false
 
