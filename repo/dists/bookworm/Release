@@ -1,0 +1,17 @@
+Codename: bookworm
+Date: Fri, 02 Oct 2026 09:44:52 UTC
+Architectures: amd64
+Components: main
+Description: smeinecke/aufs-dkms-build
+MD5Sum:
+ e4c0e0ddeac3281cc6f160258155681b 1059 main/binary-amd64/Packages
+ 2d5111481a717879b85bfdfb26cf5013 647 main/binary-amd64/Packages.gz
+ e49d0349455f04b5b6e7a6887d8ec700 75 main/binary-amd64/Release
+SHA1:
+ f78f627f1c938141d7468c705956d16699399d9b 1059 main/binary-amd64/Packages
+ f8d89ffe7e49a8bf3b18db6cc9ce435173c5f120 647 main/binary-amd64/Packages.gz
+ a337190f5b9df5b3ed2212d7b524c0a58e6a65a0 75 main/binary-amd64/Release
+SHA256:
+ 29b8ff21ff62db1856969636eb05c3164631d49403497c9d97849e89bbb15522 1059 main/binary-amd64/Packages
+ 7099cf7b730256519fc330e9e016b8644edf15920de15e652a0dbd3eec2803ca 647 main/binary-amd64/Packages.gz
+ 42b6bec9b386ec013fb334e46fe1f1605ca568ed42bad7ce12a3b4b1afed8bbc 75 main/binary-amd64/Release

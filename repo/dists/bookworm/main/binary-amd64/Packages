@@ -1,0 +1,27 @@
+Package: aufs-dkms
+Version: 6.1-bookworm
+Architecture: all
+Maintainer: Stefan Meinecke <meinecke@greensec.de>
+Installed-Size: 927
+Depends: dkms (>= 2.1.0.0)
+Suggests: aufs-tools
+Multi-Arch: foreign
+Homepage: https://github.com/sfjro/aufs-standalone
+Priority: optional
+Section: kernel
+Filename: pool/main/a/aufs-dkms/aufs-dkms_6.1-bookworm_all.deb
+Size: 160052
+SHA256: 980fabed28853b11f525b35e5241e35e7aef479cfd82a14ed81a836856ecb2e6
+SHA1: 8f77680ed0605a9d4e612776ae60ffa6d409802e
+MD5sum: 0f5bf4f65891061d8a0bf5cf1b2b9f89
+Description: DKMS files to build and install aufs
+ The aufs driver provides a union mount for Linux filesystems. It allows one
+ to virtually merge the contents of several directories and/or stack them, so
+ that file changes in the aufs union mount end up as changes in only one
+ of the source directories.
+ .
+ This package contains the DKMS files to build and install aufs.
+ .
+ To install this package, you have to install the header files for your current
+ kernel manually (usually included in the "linux-headers-<your architecture>").
+
