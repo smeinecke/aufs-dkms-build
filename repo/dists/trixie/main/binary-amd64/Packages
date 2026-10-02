@@ -1,5 +1,5 @@
 Package: aufs-dkms
-Version: 6.12-trixie
+Version: 6.12.29-trixie
 Architecture: all
 Maintainer: Stefan Meinecke <meinecke@greensec.de>
 Installed-Size: 934
@@ -9,11 +9,11 @@ Multi-Arch: foreign
 Homepage: https://github.com/sfjro/aufs-standalone
 Priority: optional
 Section: kernel
-Filename: pool/main/a/aufs-dkms/aufs-dkms_6.12-trixie_all.deb
-Size: 161072
-SHA256: 9070322c7777147e8b25bc0128cf71baebae19eeb5e04025e7a9f36ec3a8d76f
-SHA1: 7c830745cf5db9d9ecfea22115444cacd8ea7659
-MD5sum: fb4d1660ad4979aa636d2b517f6bd2fb
+Filename: pool/main/a/aufs-dkms/aufs-dkms_6.12.29-trixie_all.deb
+Size: 161040
+SHA256: 5405d5c4d596d45c91d7ee071003910267e4ccc8fa2fa5f1dc1a131e1a4a00a6
+SHA1: 3999e305e4dff8ebd3d9a5cd5a8dd049577aa032
+MD5sum: 690968cf971e02b2a7ab7a736bb3f606
 Description: DKMS files to build and install aufs
  The aufs driver provides a union mount for Linux filesystems. It allows one
  to virtually merge the contents of several directories and/or stack them, so
