@@ -1,0 +1,27 @@
+Package: aufs-dkms
+Version: 6.12-trixie
+Architecture: all
+Maintainer: Stefan Meinecke <meinecke@greensec.de>
+Installed-Size: 934
+Depends: dkms (>= 2.1.0.0)
+Suggests: aufs-tools
+Multi-Arch: foreign
+Homepage: https://github.com/sfjro/aufs-standalone
+Priority: optional
+Section: kernel
+Filename: pool/main/a/aufs-dkms/aufs-dkms_6.12-trixie_all.deb
+Size: 161072
+SHA256: 9070322c7777147e8b25bc0128cf71baebae19eeb5e04025e7a9f36ec3a8d76f
+SHA1: 7c830745cf5db9d9ecfea22115444cacd8ea7659
+MD5sum: fb4d1660ad4979aa636d2b517f6bd2fb
+Description: DKMS files to build and install aufs
+ The aufs driver provides a union mount for Linux filesystems. It allows one
+ to virtually merge the contents of several directories and/or stack them, so
+ that file changes in the aufs union mount end up as changes in only one
+ of the source directories.
+ .
+ This package contains the DKMS files to build and install aufs.
+ .
+ To install this package, you have to install the header files for your current
+ kernel manually (usually included in the "linux-headers-<your architecture>").
+
