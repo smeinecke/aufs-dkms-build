@@ -53,9 +53,27 @@ jobs:
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           files: ./*.deb
+
+  # Docker actions cannot run inside the build job's container (the image has
+  # no docker CLI), so the apt publish runs as a separate job like in
+  # build-full.yml / build-kernel.yml — serialized with the other workflows
+  # via the shared concurrency group.
+  apt:
+    name: Publish package to apt repository
+    needs: build
+    if: github.event.inputs.release
+    runs-on: ubuntu-latest
+    concurrency: apt-repo-publish
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: packages-${{ github.event.inputs.flavor }}
+          path: packages
       - name: Github pages APT repo
-        if: github.event.inputs.release
-        uses: smeinecke/apt-repo-action@b12d0c7cf1297211dbdf15c05b1dba5849ede9bb # v2.1.8
+        if: hashFiles('packages/*.deb') != ''
+        uses: smeinecke/apt-repo-action@80277dede047fa054a3d11968b133bafe8cd04ff # v2.2.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           repo_supported_arch: amd64
@@ -65,7 +83,7 @@ jobs:
             bookworm
             trixie
           file: |
-            *.deb
+            packages/*.deb
           file_target_version: "${{ github.event.inputs.flavor }}"
           public_key: ${{ secrets.APT_PUBLIC_KEY }}
           private_key: ${{ secrets.APT_SIGNING_KEY }}
