@@ -1,18 +1,19 @@
 Package: aufs-dkms
-Version: 5.10-bullseye
+Version: 5.10.140-bullseye
 Architecture: all
-Maintainer: Pablo Ruiz <pablo.ruiz@gmail.com>
-Installed-Size: 878
+Maintainer: Stefan Meinecke <meinecke@greensec.de>
+Installed-Size: 922
 Depends: dkms (>= 2.1.0.0)
+Suggests: aufs-tools
 Multi-Arch: foreign
-Homepage: http://aufs.sourceforge.net/
+Homepage: https://github.com/sfjro/aufs-standalone
 Priority: optional
 Section: kernel
-Filename: pool/main/a/aufs-dkms/aufs-dkms_5.10-bullseye_all.deb
-Size: 148804
-SHA256: 300a96ad390aee7517866f537a50c093933ec97ad3b3e8d8c3fc2550cac22ce5
-SHA1: 6dba9f368b6d8d132aaccfc6e666ae58a28bac4d
-MD5sum: b9c0403a3bec32d7c27fc0d9f6d8138b
+Filename: pool/main/a/aufs-dkms/aufs-dkms_5.10.140-bullseye_all.deb
+Size: 159076
+SHA256: e2e919b1b62ca598ce70681e6476741fceaf789aa0f33542d6fa66531cb49a47
+SHA1: 823cb26b5a3b18349d72b6c057a40e6fcbcbdbed
+MD5sum: ed54b76f327879eb848c0a6010909f77
 Description: DKMS files to build and install aufs
  The aufs driver provides a union mount for Linux filesystems. It allows one
  to virtually merge the contents of several directories and/or stack them, so
