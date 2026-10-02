@@ -43,7 +43,8 @@ jobs:
         run: echo "VERSION_TAG=${{ github.event.inputs.version_tag }}" >> "$GITHUB_ENV"
       - name: Run build script
         run: |
-          series="$(cut -d. -f1-2 <<<"${VERSION_TAG}")"
+          # POSIX (this step runs under sh inside the container)
+          series="$(printf '%s' "${VERSION_TAG}" | cut -d. -f1-2)"
           case "${DEB_FLAVOR}" in
             buster)   want=4.19 ;;
             bullseye) want=5.10 ;;
