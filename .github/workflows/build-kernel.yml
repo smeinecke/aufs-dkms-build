@@ -115,7 +115,7 @@ jobs:
           echo "KVER=${kver}" >> "${GITHUB_ENV}"
 
       - name: Release
-        uses: softprops/action-gh-release@e598afbe1493e6b1bafb1f389cabb956eab91231 # v3.0.3
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           tag_name: "kernel-${{ matrix.os-version }}-${{ env.KVER }}"
           name: "aufs kernel ${{ env.KREL }} (${{ matrix.os-version }})"
