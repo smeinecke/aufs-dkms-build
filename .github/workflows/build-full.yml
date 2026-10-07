@@ -105,6 +105,7 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: "packages-*"
@@ -177,3 +178,36 @@ jobs:
           private_key: ${{ secrets.APT_SIGNING_KEY }}
           public_key: ${{ secrets.APT_SIGNING_PUBKEY }}
           key_passphrase: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
+
+      # Flat release repos (apt-repo-<distro> tags) carry debs of any size
+      # and accumulate across runs - build-kernel.yml adds kernel debs.
+      - name: Install flat-repo tooling
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq apt-utils dpkg-dev
+      - name: Publish buster flat apt repo
+        if: hashFiles('artifacts/packages-buster/*.deb') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APT_SIGNING_KEY: ${{ secrets.APT_SIGNING_KEY }}
+          APT_SIGNING_KEY_PASSPHRASE: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
+        run: ./scripts/publish-flat-repo.sh buster artifacts/packages-buster/*.deb
+      - name: Publish bullseye flat apt repo
+        if: hashFiles('artifacts/packages-bullseye/*.deb') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APT_SIGNING_KEY: ${{ secrets.APT_SIGNING_KEY }}
+          APT_SIGNING_KEY_PASSPHRASE: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
+        run: ./scripts/publish-flat-repo.sh bullseye artifacts/packages-bullseye/*.deb
+      - name: Publish bookworm flat apt repo
+        if: hashFiles('artifacts/packages-bookworm/*.deb') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APT_SIGNING_KEY: ${{ secrets.APT_SIGNING_KEY }}
+          APT_SIGNING_KEY_PASSPHRASE: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
+        run: ./scripts/publish-flat-repo.sh bookworm artifacts/packages-bookworm/*.deb
+      - name: Publish trixie flat apt repo
+        if: hashFiles('artifacts/packages-trixie/*.deb') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APT_SIGNING_KEY: ${{ secrets.APT_SIGNING_KEY }}
+          APT_SIGNING_KEY_PASSPHRASE: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
+        run: ./scripts/publish-flat-repo.sh trixie artifacts/packages-trixie/*.deb

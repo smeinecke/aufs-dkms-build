@@ -66,15 +66,31 @@ Notes:
   your own MOK signing.
 * The flavour tracks Debian's kernel ABI; a Debian point release or
   security update produces a new `+aufsN` build automatically (weekly CI).
-* trixie: the `linux-image` deb grew past GitHub's 100MB per-file git
-  limit, so the apt repo carries only headers/kbuild. Get the matching
-  `linux-image-*-aufs-amd64` deb from the latest `kernel-trixie-*` (or
-  `6.12.29`) release and `apt-get install ./linux-image-*.deb` - the
-  headers/kbuild deps still resolve from the repo.
 * `scripts/build-kernel.sh <codename>` builds these packages locally;
   per-series patch sets live in `scripts/kernel/<series>/`.
 
 ## Add Repo
+
+The recommended source is the flat apt repo hosted as GitHub release
+assets - it carries **all** packages including the >100MB kernel images
+(release assets allow 2GB, the Pages git repo is limited to 100MB):
+
+```
+curl -fsSL https://github.com/smeinecke/aufs-dkms-build/releases/download/apt-repo-trixie/public.key \
+  | gpg --dearmor -o /etc/apt/trusted.gpg.d/aufs-dkms-build.gpg
+echo 'deb https://github.com/smeinecke/aufs-dkms-build/releases/download/apt-repo-trixie/ ./' \
+  > /etc/apt/sources.list.d/aufs-dkms-build.list
+apt-get update
+apt-get install linux-image-aufs-amd64 linux-headers-aufs-amd64 aufs-dkms
+```
+
+Replace `trixie` in the URLs with your release codename
+(`bookworm`, `bullseye`, `buster`).
+
+Alternative (legacy) source on GitHub Pages - same packages, but without
+files over 100MB, so trixie's `linux-image` deb is only available via
+the flat repo above or the `kernel-trixie-*` release:
+
 ```
 apt-get install software-properties-common
 apt-add-repository 'deb [arch=amd64] https://smeinecke.github.io/aufs-dkms-build/repo trixie main'
@@ -83,8 +99,6 @@ gpg --no-default-keyring --keyring ./dkms_keyring.gpg --import dkms.key
 gpg --no-default-keyring --keyring ./dkms_keyring.gpg --export > ./dkms.gpg
 mv ./dkms.gpg /etc/apt/trusted.gpg.d/
 ```
-
-Replace `trixie` with your release codename (`bookworm`, `bullseye`, `buster`).
 
 ## Local build
 
