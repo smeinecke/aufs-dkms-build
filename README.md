@@ -66,6 +66,11 @@ Notes:
   your own MOK signing.
 * The flavour tracks Debian's kernel ABI; a Debian point release or
   security update produces a new `+aufsN` build automatically (weekly CI).
+* trixie: the `linux-image` deb grew past GitHub's 100MB per-file git
+  limit, so the apt repo carries only headers/kbuild. Get the matching
+  `linux-image-*-aufs-amd64` deb from the latest `kernel-trixie-*` (or
+  `6.12.29`) release and `apt-get install ./linux-image-*.deb` - the
+  headers/kbuild deps still resolve from the repo.
 * `scripts/build-kernel.sh <codename>` builds these packages locally;
   per-series patch sets live in `scripts/kernel/<series>/`.
 

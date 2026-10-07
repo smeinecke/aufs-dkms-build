@@ -101,6 +101,7 @@ jobs:
           - { os-version: bookworm }
           - { os-version: trixie }
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: "kernel-${{ matrix.os-version }}"
@@ -129,12 +130,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          case "${{ matrix.os-version }}" in
-            bullseye) tag=5.10.140 ;;
-            bookworm) tag=6.1 ;;
-            trixie)   tag=6.12 ;;
-            *) tag="" ;;
-          esac
+          # the aufs-dkms release tag for this distro is tracked in the
+          # upstream-watch state file (point branches move, e.g. 6.12.29)
+          tag="$(jq -r --arg f "${{ matrix.os-version }}" '.[$f].tag // empty' .github/upstream-state.json)"
           [ -n "${tag}" ] || exit 0
           if ! gh release view "${tag}" >/dev/null 2>&1; then
             echo "release ${tag} does not exist yet; skipping"
@@ -162,8 +160,32 @@ jobs:
         with:
           pattern: "kernel-*"
           path: artifacts
+
+      # gh-pages is a git branch: files >100MB can never be pushed (kernel
+      # images crossed that on trixie). Filter them out - releases still
+      # carry everything - and drop the linux-image metapackage when its
+      # versioned image was filtered, else it would depend on a missing deb.
+      - name: Filter oversized debs
+        run: |
+          set -e
+          for d in bullseye bookworm trixie; do
+            mkdir -p "filtered/${d}"
+            for f in "artifacts/kernel-${d}"/*.deb; do
+              [ -e "${f}" ] || continue
+              if [ "$(stat -c%s "${f}")" -gt 97500000 ]; then
+                echo "::warning::skipping $(basename "${f}") (>97MB, git file limit)"
+              else
+                cp "${f}" "filtered/${d}/"
+              fi
+            done
+            if ! ls filtered/${d}/linux-image-*-aufs-amd64_*.deb >/dev/null 2>&1; then
+              rm -f filtered/${d}/linux-image-aufs-amd64_*.deb
+            fi
+            ls -la "filtered/${d}"
+          done
+
       - name: Add bullseye kernel packages to apt repository
-        if: hashFiles('artifacts/kernel-bullseye/*.deb') != ''
+        if: hashFiles('filtered/bullseye/*.deb') != ''
         uses: smeinecke/apt-repo-action@f7bfcf90edda137bd1c808863ae2bc24cea959df # v2.2.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -174,13 +196,13 @@ jobs:
             bookworm
             trixie
           file: |
-            artifacts/kernel-bullseye/*.deb
+            filtered/bullseye/*.deb
           file_target_version: bullseye
           private_key: ${{ secrets.APT_SIGNING_KEY }}
           public_key: ${{ secrets.APT_SIGNING_PUBKEY }}
           key_passphrase: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
       - name: Add bookworm kernel packages to apt repository
-        if: hashFiles('artifacts/kernel-bookworm/*.deb') != ''
+        if: hashFiles('filtered/bookworm/*.deb') != ''
         uses: smeinecke/apt-repo-action@f7bfcf90edda137bd1c808863ae2bc24cea959df # v2.2.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -191,13 +213,13 @@ jobs:
             bookworm
             trixie
           file: |
-            artifacts/kernel-bookworm/*.deb
+            filtered/bookworm/*.deb
           file_target_version: bookworm
           private_key: ${{ secrets.APT_SIGNING_KEY }}
           public_key: ${{ secrets.APT_SIGNING_PUBKEY }}
           key_passphrase: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
       - name: Add trixie kernel packages to apt repository
-        if: hashFiles('artifacts/kernel-trixie/*.deb') != ''
+        if: hashFiles('filtered/trixie/*.deb') != ''
         uses: smeinecke/apt-repo-action@f7bfcf90edda137bd1c808863ae2bc24cea959df # v2.2.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -208,7 +230,7 @@ jobs:
             bookworm
             trixie
           file: |
-            artifacts/kernel-trixie/*.deb
+            filtered/trixie/*.deb
           file_target_version: trixie
           private_key: ${{ secrets.APT_SIGNING_KEY }}
           public_key: ${{ secrets.APT_SIGNING_PUBKEY }}
