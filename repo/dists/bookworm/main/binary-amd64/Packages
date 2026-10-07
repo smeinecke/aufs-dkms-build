@@ -25,3 +25,148 @@ Description: DKMS files to build and install aufs
  To install this package, you have to install the header files for your current
  kernel manually (usually included in the "linux-headers-<your architecture>").
 
+Package: linux-headers-6.1.0-54-aufs-amd64
+Source: linux
+Version: 6.1.187-1+aufs1
+Architecture: amd64
+Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Installed-Size: 4037
+Depends: linux-headers-6.1.0-54-common (= 6.1.187-1+aufs1), linux-kbuild-6.1 (>= 6.1.187-1+aufs1), linux-compiler-gcc-12-x86
+Homepage: https://www.kernel.org/
+Priority: optional
+Section: kernel
+Filename: pool/main/l/linux/linux-headers-6.1.0-54-aufs-amd64_6.1.187-1+aufs1_amd64.deb
+Size: 1738168
+SHA256: 3c49d38cc816469affb67e543c8dcb23834759e604b2c9fd16d834fd23e94cad
+SHA1: 5593790026c87da78f06b0d121eb45ee96726e6a
+MD5sum: 0ab30a2b9fb481de6c1c637fdef2d3d6
+Description: Header files for Linux 6.1.0-54-aufs-amd64
+ This package provides the architecture-specific kernel header files for
+ Linux kernel 6.1.0-54-aufs-amd64, generally used for building out-of-tree
+ kernel modules.  These files are going to be installed into
+ /usr/src/linux-headers-6.1.0-54-aufs-amd64, and can be used for building
+ modules that load into the kernel provided by the
+ linux-image-6.1.0-54-aufs-amd64 package.
+
+Package: linux-headers-6.1.0-54-common
+Source: linux
+Version: 6.1.187-1+aufs1
+Architecture: all
+Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Installed-Size: 57023
+Multi-Arch: foreign
+Homepage: https://www.kernel.org/
+Priority: optional
+Section: kernel
+Filename: pool/main/l/linux/linux-headers-6.1.0-54-common_6.1.187-1+aufs1_all.deb
+Size: 10421864
+SHA256: bf79c2fdf58eff0a6c08c3e46682bd2f2eaf3fee13dd48db7075be010ddc4c2b
+SHA1: 59b5a001c2c3f8216b47272134cc06ff0d49fb12
+MD5sum: 799d443a80280df2d41d957373d0e3f9
+Description: Common header files for Linux 6.1.0-54
+ This package provides the common kernel header files for Linux kernel
+ version 6.1.0-54, generally used for building out-of-tree kernel modules.
+ To obtain a complete set of headers you also need to install the
+ linux-headers-6.1.0-54-(flavour) package, matching the flavour of the
+ kernel you intend the build for.
+
+Package: linux-headers-aufs-amd64
+Source: linux
+Version: 6.1.187-1+aufs1
+Architecture: amd64
+Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Installed-Size: 1186
+Depends: linux-headers-6.1.0-54-aufs-amd64 (= 6.1.187-1+aufs1)
+Provides: linux-headers-generic
+Homepage: https://www.kernel.org/
+Priority: optional
+Section: kernel
+Filename: pool/main/l/linux/linux-headers-aufs-amd64_6.1.187-1+aufs1_amd64.deb
+Size: 1206364
+SHA256: 370b73aedc6e3dd7232ac3c8217bf8d198f68849e738f53957d41d395d49d1d5
+SHA1: 36dbbbb8265c5e8a19d20ae82bddfcb2f6962d43
+MD5sum: 492dee6a196f0acb50ca35e11db551cc
+Description: Header files for Linux aufs-amd64 configuration (meta-package)
+ This package depends on the architecture-specific header files for the
+ latest Linux kernel aufs-amd64 configuration.
+
+Package: linux-image-6.1.0-54-aufs-amd64
+Source: linux
+Version: 6.1.187-1+aufs1
+Architecture: amd64
+Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Installed-Size: 400180
+Depends: kmod, linux-base (>= 4.3~), initramfs-tools (>= 0.120+deb8u2) | linux-initramfs-tool
+Recommends: firmware-linux-free, apparmor
+Suggests: linux-doc-6.1, debian-kernel-handbook, grub-pc | grub-efi-amd64 | extlinux
+Breaks: fwupdate (<< 12-7), initramfs-tools (<< 0.120+deb8u2), wireless-regdb (<< 2019.06.03-1~)
+Homepage: https://www.kernel.org/
+Priority: optional
+Section: kernel
+Filename: pool/main/l/linux/linux-image-6.1.0-54-aufs-amd64_6.1.187-1+aufs1_amd64.deb
+Size: 70353860
+SHA256: bb89f36945dbcc522a69af633f7e9265a6dff311ae95c1eb5d68f0c0b7353c4a
+SHA1: 0bca589217dfdbdc7469a6546b9d90bb5de8a53a
+MD5sum: 910293365b3d005ea33a3cd88da451eb
+Description: Linux 6.1 for 64-bit PCs (aufs)
+ The Linux kernel 6.1 and modules for use on PCs with AMD64, Intel 64 or
+ VIA Nano processors, aufs enabled.
+
+Package: linux-image-aufs-amd64
+Source: linux
+Version: 6.1.187-1+aufs1
+Architecture: amd64
+Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Installed-Size: 1189
+Depends: linux-image-6.1.0-54-aufs-amd64 (= 6.1.187-1+aufs1)
+Provides: linux-image-generic, linux-latest-modules-6.1.0-54-aufs-amd64, virtualbox-guest-modules, wireguard-modules (= 1.0.0)
+Homepage: https://www.kernel.org/
+Priority: optional
+Section: kernel
+Filename: pool/main/l/linux/linux-image-aufs-amd64_6.1.187-1+aufs1_amd64.deb
+Size: 1206692
+SHA256: ec94077fd2ee8081c7ca0d8f60bb76a8641e1d43d3995d35cfb16ea2e9124fe6
+SHA1: ac43c7dc55eaabd5671ee7fd98cde4e59a627f16
+MD5sum: f382531685d2e05a2f401c4e98ce2451
+Description: Linux for 64-bit PCs (aufs) (meta-package)
+ This package depends on the latest Linux kernel and modules for use on PCs
+ with AMD64, Intel 64 or VIA Nano processors, aufs enabled.
+
+Package: linux-kbuild-6.1
+Source: linux
+Version: 6.1.187-1+aufs1
+Architecture: amd64
+Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Installed-Size: 2286
+Depends: libc6 (>= 2.34), libelf1 (>= 0.142), libssl3 (>= 3.0.0)
+Multi-Arch: foreign
+Homepage: https://www.kernel.org/
+Priority: optional
+Section: kernel
+Filename: pool/main/l/linux/linux-kbuild-6.1_6.1.187-1+aufs1_amd64.deb
+Size: 1463796
+SHA256: 78e93f48e77defb41169514509ccb1a40a4be4e278f252d4f6d8cda003eda34b
+SHA1: 298f48b9b51845dc3ff902742014df9abb9d87e3
+MD5sum: dae8500c2b2a862865a41a5e7401e627
+Description: Kbuild infrastructure for Linux 6.1
+ This package provides the kbuild infrastructure for the headers packages
+ for Linux kernel version 6.1.
+
+Package: linux-kbuild-6.1-dbgsym
+Source: linux
+Version: 6.1.187-1+aufs1
+Auto-Built-Package: debug-symbols
+Architecture: amd64
+Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Installed-Size: 1172
+Depends: linux-kbuild-6.1 (= 6.1.187-1+aufs1)
+Priority: optional
+Section: debug
+Filename: pool/main/l/linux/linux-kbuild-6.1-dbgsym_6.1.187-1+aufs1_amd64.deb
+Size: 1032872
+SHA256: 4d185c118be5e239a6c6320ddb721fc287566d1f8336587705d584e58b11f08a
+SHA1: 9b6e9490d905433cbeb0cc1680bf9b1afb55c89d
+MD5sum: 923dc12558914d2ba7e60a1b8c5d746d
+Description: debug symbols for linux-kbuild-6.1
+Build-Ids: 0bfecaec5649179abbc01653188cb8bfc1202874 2d0c11a72e1c64c301cd20fb53d986da8a29238e 44e3c73959cdccf66f8f4a50c0c0b40eca3a717c 5397fbcd083e466984bc3cca54813772385437b5 7f73515bb6b6727f3195f5e9a514dd83b37b8166 9c1fbf273862fb22bfeabeac0546039963a8fa6f b2dafef68dbef2b003fe1f36976de824434fad57 b6ecb3b7e2eecda66e06dfc4fbe7916884826575 bc2b758a470b076fd27f641f464567a0af9e20f7 beaa6f25a71d747acca30c44ce8ab93d3c56b264 c1ed5f94ffda0052448de245916d9b16128a0094 d9e1bd9851b0c307900ef767e618cc3677dd7c18 dcf3b0a42db4ddd61169675fb35299064249e23d eba31714fe0370767b74211a363e673822e233b8 f0683fea2835b3322cb8ec1fc3607f7e0d07bb16
+
