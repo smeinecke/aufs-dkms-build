@@ -25,3 +25,109 @@ Description: DKMS files to build and install aufs
  To install this package, you have to install the header files for your current
  kernel manually (usually included in the "linux-headers-<your architecture>").
 
+Package: linux-headers-6.12.111+deb13.1-aufs-amd64
+Source: linux
+Version: 6.12.111-1+aufs1
+Architecture: amd64
+Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Installed-Size: 10282
+Depends: linux-base (>= 4.12~), linux-headers-6.12.111+deb13.1-common (= 6.12.111-1+aufs1), linux-image-6.12.111+deb13.1-aufs-amd64 (= 6.12.111-1+aufs1) | linux-image-6.12.111+deb13.1-aufs-amd64-unsigned (= 6.12.111-1+aufs1), linux-kbuild-6.12.111+deb13.1, gcc-14
+Homepage: https://www.kernel.org/
+Priority: optional
+Section: kernel
+Filename: pool/main/l/linux/linux-headers-6.12.111+deb13.1-aufs-amd64_6.12.111-1+aufs1_amd64.deb
+Size: 3194000
+SHA256: d8c05cf560f99e75126e6f4f74db073963e55e4e3894b83d2d4870bb8d9bb2a8
+SHA1: cd4c1b0197290c3da6f245d13d905d82a9355fe6
+MD5sum: da4ec674ecc09a043fd484bf5c02cfa1
+Description: Header files for Linux 6.12.111+deb13.1-aufs-amd64
+ This package provides the architecture-specific kernel header files for
+ Linux kernel 6.12.111+deb13.1-aufs-amd64, generally used for building
+ out-of-tree kernel modules.  These files are going to be installed into
+ /usr/src/linux-headers-6.12.111+deb13.1-aufs-amd64, and can be used for
+ building modules that load into the kernel provided by the
+ linux-image-6.12.111+deb13.1-aufs-amd64 package.
+
+Package: linux-headers-6.12.111+deb13.1-common
+Source: linux
+Version: 6.12.111-1+aufs1
+Architecture: all
+Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Installed-Size: 61424
+Multi-Arch: foreign
+Homepage: https://www.kernel.org/
+Priority: optional
+Section: kernel
+Filename: pool/main/l/linux/linux-headers-6.12.111+deb13.1-common_6.12.111-1+aufs1_all.deb
+Size: 11294284
+SHA256: 9f2ca679b501131c4f24ad88ee921b986b4649a5241bcebfc8a1efd1569bed6b
+SHA1: 231fd89ced5dfdfcf899f5a346d1cf1e7672c007
+MD5sum: 335f2566998ee4affb751d2f1b38b287
+Description: Common header files for Linux 6.12.111+deb13.1
+ This package provides the common kernel header files for Linux kernel
+ version 6.12.111+deb13.1, generally used for building out-of-tree kernel
+ modules.  These files are going to be installed into
+ /usr/src/linux-headers-6.12.111+deb13.1-common.
+ .
+ To obtain a complete set of headers you also need to install the
+ linux-headers-6.12.111+deb13.1-(flavour) package, matching the flavour of
+ the kernel you intend the build for.
+
+Package: linux-headers-aufs-amd64
+Source: linux
+Version: 6.12.111-1+aufs1
+Architecture: amd64
+Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Installed-Size: 10
+Depends: linux-headers-6.12.111+deb13.1-aufs-amd64 (= 6.12.111-1+aufs1)
+Provides: linux-headers-generic
+Homepage: https://www.kernel.org/
+Priority: optional
+Section: kernel
+Filename: pool/main/l/linux/linux-headers-aufs-amd64_6.12.111-1+aufs1_amd64.deb
+Size: 1188
+SHA256: 964ac11e557240114395986291d2ee13dcf9e92417e75fb2dea234205eef30a3
+SHA1: 3567e08f3b0fc878d728add9c5042c3e3ec448cd
+MD5sum: e702705c60cec1a3e7a080edaa67815e
+Description: Header files for Linux aufs-amd64 configuration (meta-package)
+ This package depends on the architecture-specific header files for the
+ latest Linux kernel aufs-amd64 configuration.
+
+Package: linux-kbuild-6.12.111+deb13.1
+Source: linux
+Version: 6.12.111-1+aufs1
+Architecture: amd64
+Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Installed-Size: 3161
+Depends: libc6 (>= 2.38), libelf1t64 (>= 0.144), libssl3t64 (>= 3.0.0), zlib1g (>= 1:1.2.3.4), pahole
+Multi-Arch: foreign
+Homepage: https://www.kernel.org/
+Priority: optional
+Section: kernel
+Filename: pool/main/l/linux/linux-kbuild-6.12.111+deb13.1_6.12.111-1+aufs1_amd64.deb
+Size: 1866616
+SHA256: 42933560476789daf842c97872b18c6e6a180afec4110f0c9eba8d8c991f2b35
+SHA1: 1b0db689035be3e77a922144798ea7c34fb8fa8f
+MD5sum: 810213fc03436e617b4288d05ec1385e
+Description: Kbuild infrastructure for Linux 6.12.111+deb13.1
+ This package provides the kbuild infrastructure for the headers packages
+ for Linux kernel version 6.12.
+
+Package: linux-kbuild-6.12.111+deb13.1-dbgsym
+Source: linux
+Version: 6.12.111-1+aufs1
+Auto-Built-Package: debug-symbols
+Architecture: amd64
+Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
+Installed-Size: 2411
+Depends: linux-kbuild-6.12.111+deb13.1 (= 6.12.111-1+aufs1)
+Priority: optional
+Section: debug
+Filename: pool/main/l/linux/linux-kbuild-6.12.111+deb13.1-dbgsym_6.12.111-1+aufs1_amd64.deb
+Size: 1920280
+SHA256: a54b70496523e69306177d53bc3a1937c8387c4ee827ec11597dc17b5910dec1
+SHA1: 80839ee626c37294544853a1d8e7a9ae87428247
+MD5sum: 3922815f5e45769b5e438e66fdf45507
+Description: debug symbols for linux-kbuild-6.12.111+deb13.1
+Build-Ids: 13bb114b25d7840c712c4cc5d7eb22a80dc8565d 14f148f44608109daaf281c1283161f5bac85a85 3209af69f3db96d364fe398bb033a52579bea92b 34e724e77f2b890dd8151bf8967bc7420363f606 65c9ad728d20a45789775ff0f19b0ee0d58a02e7 6b6b8ae02b59264354b6fe9e5546ff26a8a85392 8da0cc30fa57e75161f393586ff1290f0fd85a31 9b4390687328e923d1850a2b7e12734661cd1eb1 a477c1142b7058f07a508d5f020c7bfe17263c49 a9e4a6f13306c7714c706fd5aa3a2da858386d00 c33c0b593a6f8f5506cd04306e2a44ecef3184a7 d82a100c847d9cc8a6f44ff8d5c0b7d05c3f97e1 e79da4808b6a4259f0ff9922de0f0ca03d2bf241 ef3b97bbf16a2396bd02417a23bb449307cf2dbe fc98ea831a11115cee84540c4572e3e0cf2a884f
+
