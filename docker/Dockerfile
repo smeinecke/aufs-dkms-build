@@ -9,18 +9,19 @@ ADD assets/dpkg_nolocale /etc/dpkg/dpkg.cfg.d/90_nolocale
 ADD assets/apt_nocache /etc/apt/apt.conf.d/90_nocache
 ADD assets/apt_mindeps /etc/apt/apt.conf.d/90_mindeps
 
-# EOL releases only exist on archive.debian.org with expired Release files
+# EOL releases: pin dated snapshot.debian.org trees - archive.debian.org
+# edge nodes serve sporadic 404s for pool files that break apt fetches
 RUN	set -eux; \
     if [ "${FLAVOR}" = "buster" ]; then \
         printf '%s\n' \
-            'deb http://archive.debian.org/debian buster main' \
-            'deb http://archive.debian.org/debian buster-updates main' \
-            'deb http://archive.debian.org/debian-security buster/updates main' \
+            'deb http://snapshot.debian.org/archive/debian/20250712T000000Z buster main' \
+            'deb http://snapshot.debian.org/archive/debian/20250712T000000Z buster-updates main' \
+            'deb http://snapshot.debian.org/archive/debian-security/20250712T000000Z buster/updates main' \
             > /etc/apt/sources.list; \
     elif [ "${FLAVOR}" = "bullseye" ]; then \
         printf '%s\n' \
-            'deb http://archive.debian.org/debian bullseye main' \
-            'deb http://archive.debian.org/debian bullseye-updates main' \
+            'deb http://snapshot.debian.org/archive/debian/20260901T000000Z bullseye main' \
+            'deb http://snapshot.debian.org/archive/debian/20260901T000000Z bullseye-updates main' \
             'deb http://snapshot.debian.org/archive/debian-security/20260901T000000Z bullseye-security main' \
             > /etc/apt/sources.list; \
     fi; \

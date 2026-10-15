@@ -4,13 +4,13 @@
 # Expects the aufs-dkms_*_all.deb file in the home directory.
 set -euxo pipefail
 
-# EOL releases only resolve via archive.debian.org
+# EOL releases resolve via dated snapshot.debian.org trees
 case "$(. /etc/os-release && echo "${VERSION_CODENAME}")" in
     buster)
         printf '%s\n' \
-            'deb http://archive.debian.org/debian buster main' \
-            'deb http://archive.debian.org/debian buster-updates main' \
-            'deb http://archive.debian.org/debian-security buster/updates main' \
+            'deb http://snapshot.debian.org/archive/debian/20250712T000000Z buster main' \
+            'deb http://snapshot.debian.org/archive/debian/20250712T000000Z buster-updates main' \
+            'deb http://snapshot.debian.org/archive/debian-security/20250712T000000Z buster/updates main' \
             | sudo tee /etc/apt/sources.list >/dev/null
         printf '%s\n' \
             'Acquire::Check-Valid-Until "false";' \
@@ -18,13 +18,13 @@ case "$(. /etc/os-release && echo "${VERSION_CODENAME}")" in
             | sudo tee /etc/apt/apt.conf.d/99_archive >/dev/null
         ;;
     bullseye)
-        # archive.debian.org carries bullseye main/-updates only; the
-        # debian-security dist was removed with the EOL migration, but the
-        # cloud image ships deb11u14 libc — pin the dated security snapshot
-        # (same source as docker/Dockerfile) so build-essential resolves
+        # bullseye moved to archive.debian.org at EOL, but its CDN edges
+        # serve sporadic pool 404s - pin the dated snapshot (same source
+        # as docker/Dockerfile) so build-essential resolves the deb11u14
+        # libc
         printf '%s\n' \
-            'deb http://archive.debian.org/debian bullseye main' \
-            'deb http://archive.debian.org/debian bullseye-updates main' \
+            'deb http://snapshot.debian.org/archive/debian/20260901T000000Z bullseye main' \
+            'deb http://snapshot.debian.org/archive/debian/20260901T000000Z bullseye-updates main' \
             'deb http://snapshot.debian.org/archive/debian-security/20260901T000000Z bullseye-security main' \
             | sudo tee /etc/apt/sources.list >/dev/null
         printf '%s\n' \
