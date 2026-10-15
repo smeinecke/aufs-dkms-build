@@ -227,9 +227,9 @@ jobs:
           scp "${ssho[@]}" -P ${{ matrix.port }} kernel/*.deb packages/aufs-dkms_*_all.deb \
             scripts/integration-test.sh debian@127.0.0.1:~/
           # kexec -e kills the guest mid-connection; slirp holds the TCP
-          # session half-open, so bound the wait with keepalives + timeout
-          timeout 1800 ssh "${ssho[@]}" -o ServerAliveInterval=10 \
-            -o ServerAliveCountMax=6 -p ${{ matrix.port }} debian@127.0.0.1 '
+          # session half-open, so bound the wait with keepalives
+          ssh "${ssho[@]}" -o ServerAliveInterval=10 -o ServerAliveCountMax=6 \
+            -p ${{ matrix.port }} debian@127.0.0.1 '
             set -e
             case "$(. /etc/os-release && echo "${VERSION_CODENAME}")" in
               bullseye)
