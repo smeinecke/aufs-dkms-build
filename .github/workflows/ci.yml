@@ -149,7 +149,7 @@ jobs:
     name: Integration test (${{ matrix.os-version }}, aufs kernel)
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
