@@ -25,7 +25,9 @@ RUN	set -eux; \
             > /etc/apt/sources.list; \
     fi; \
     if [ "${FLAVOR}" = "buster" ] || [ "${FLAVOR}" = "bullseye" ]; then \
-        echo 'Acquire::Check-Valid-Until "false";' \
+        printf '%s\n' \
+            'Acquire::Check-Valid-Until "false";' \
+            'Acquire::Retries "5";' \
             > /etc/apt/apt.conf.d/99_archive; \
     fi
 

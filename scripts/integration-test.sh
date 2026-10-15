@@ -12,7 +12,9 @@ case "$(. /etc/os-release && echo "${VERSION_CODENAME}")" in
             'deb http://archive.debian.org/debian buster-updates main' \
             'deb http://archive.debian.org/debian-security buster/updates main' \
             | sudo tee /etc/apt/sources.list >/dev/null
-        echo 'Acquire::Check-Valid-Until "false";' \
+        printf '%s\n' \
+            'Acquire::Check-Valid-Until "false";' \
+            'Acquire::Retries "5";' \
             | sudo tee /etc/apt/apt.conf.d/99_archive >/dev/null
         ;;
     bullseye)
@@ -25,7 +27,9 @@ case "$(. /etc/os-release && echo "${VERSION_CODENAME}")" in
             'deb http://archive.debian.org/debian bullseye-updates main' \
             'deb http://snapshot.debian.org/archive/debian-security/20260901T000000Z bullseye-security main' \
             | sudo tee /etc/apt/sources.list >/dev/null
-        echo 'Acquire::Check-Valid-Until "false";' \
+        printf '%s\n' \
+            'Acquire::Check-Valid-Until "false";' \
+            'Acquire::Retries "5";' \
             | sudo tee /etc/apt/apt.conf.d/99_archive >/dev/null
         ;;
 esac
