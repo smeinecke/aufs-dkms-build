@@ -46,7 +46,7 @@ if [[ "$(uname -r)" == *aufs* ]]; then
 else
     headers_pkg="linux-headers-$(uname -r)"
 fi
-sudo apt-get install -y -qq --no-install-recommends \
+sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
     ${headers_pkg:+"${headers_pkg}"} dkms build-essential kmod
 
 sudo dpkg -i aufs-dkms_*_all.deb
