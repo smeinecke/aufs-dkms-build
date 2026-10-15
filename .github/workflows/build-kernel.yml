@@ -202,6 +202,7 @@ jobs:
           private_key: ${{ secrets.APT_SIGNING_KEY }}
           public_key: ${{ secrets.APT_SIGNING_PUBKEY }}
           key_passphrase: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
+          skip_duplicates: true
       - name: Add bookworm kernel packages to apt repository
         if: hashFiles('filtered/bookworm/*.deb') != ''
         uses: smeinecke/apt-repo-action@f7bfcf90edda137bd1c808863ae2bc24cea959df # v2.2.1
@@ -219,6 +220,7 @@ jobs:
           private_key: ${{ secrets.APT_SIGNING_KEY }}
           public_key: ${{ secrets.APT_SIGNING_PUBKEY }}
           key_passphrase: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
+          skip_duplicates: true
       - name: Add trixie kernel packages to apt repository
         if: hashFiles('filtered/trixie/*.deb') != ''
         uses: smeinecke/apt-repo-action@f7bfcf90edda137bd1c808863ae2bc24cea959df # v2.2.1
@@ -236,6 +238,7 @@ jobs:
           private_key: ${{ secrets.APT_SIGNING_KEY }}
           public_key: ${{ secrets.APT_SIGNING_PUBKEY }}
           key_passphrase: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
+          skip_duplicates: true
 
       # Flat release repos have no size limit (2GB assets) - they get the
       # UNFILTERED debs so e.g. the trixie image stays apt-installable.

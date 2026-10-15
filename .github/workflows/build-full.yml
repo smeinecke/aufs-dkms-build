@@ -127,6 +127,7 @@ jobs:
           private_key: ${{ secrets.APT_SIGNING_KEY }}
           public_key: ${{ secrets.APT_SIGNING_PUBKEY }}
           key_passphrase: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
+          skip_duplicates: true
       - name: Add bullseye package to apt repository
         if: hashFiles('artifacts/packages-bullseye/*.deb') != ''
         uses: smeinecke/apt-repo-action@f7bfcf90edda137bd1c808863ae2bc24cea959df # v2.2.1
@@ -144,6 +145,7 @@ jobs:
           private_key: ${{ secrets.APT_SIGNING_KEY }}
           public_key: ${{ secrets.APT_SIGNING_PUBKEY }}
           key_passphrase: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
+          skip_duplicates: true
       - name: Add bookworm package to apt repository
         if: hashFiles('artifacts/packages-bookworm/*.deb') != ''
         uses: smeinecke/apt-repo-action@f7bfcf90edda137bd1c808863ae2bc24cea959df # v2.2.1
@@ -161,6 +163,7 @@ jobs:
           private_key: ${{ secrets.APT_SIGNING_KEY }}
           public_key: ${{ secrets.APT_SIGNING_PUBKEY }}
           key_passphrase: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
+          skip_duplicates: true
       - name: Add trixie package to apt repository
         if: hashFiles('artifacts/packages-trixie/*.deb') != ''
         uses: smeinecke/apt-repo-action@f7bfcf90edda137bd1c808863ae2bc24cea959df # v2.2.1
@@ -178,6 +181,7 @@ jobs:
           private_key: ${{ secrets.APT_SIGNING_KEY }}
           public_key: ${{ secrets.APT_SIGNING_PUBKEY }}
           key_passphrase: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
+          skip_duplicates: true
 
       # Flat release repos (apt-repo-<distro> tags) carry debs of any size
       # and accumulate across runs - build-kernel.yml adds kernel debs.
