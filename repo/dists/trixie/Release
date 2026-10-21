@@ -1,17 +1,17 @@
 Codename: trixie
-Date: Wed, 21 Oct 2026 10:15:54 UTC
+Date: Wed, 21 Oct 2026 10:16:10 UTC
 Architectures: amd64
 Components: main
 Description: smeinecke/aufs-dkms-build
 MD5Sum:
- f6ed51a7acee4928970ae96af465160d 6244 main/binary-amd64/Packages
- 9898e864ef5196e0b37423c09e709d3a 2282 main/binary-amd64/Packages.gz
+ f5ae53c8478e10fdf02845f922b51340 10627 main/binary-amd64/Packages
+ 021c71be394fc60713ee6af0e7711e79 2888 main/binary-amd64/Packages.gz
  e49d0349455f04b5b6e7a6887d8ec700 75 main/binary-amd64/Release
 SHA1:
- 4dab98878f95aa59a9c4477330125b546824f569 6244 main/binary-amd64/Packages
- 0f8a1f4f0a1818bfbc5f84432440457f603ff9eb 2282 main/binary-amd64/Packages.gz
+ 2d71ea6bd66272357f9235144d8b944d09f5d01b 10627 main/binary-amd64/Packages
+ 806ce6dbf6790ddc87f30f5691af7d3ede883dda 2888 main/binary-amd64/Packages.gz
  a337190f5b9df5b3ed2212d7b524c0a58e6a65a0 75 main/binary-amd64/Release
 SHA256:
- c9e044160c1f0db7c0dceeac5f2fd66643ce2db66b35e2acfbcf74bb62a52ece 6244 main/binary-amd64/Packages
- 030df958336cd28692484b695f29ad58aa004f04ecc876bbd58d9a6c54fd5291 2282 main/binary-amd64/Packages.gz
+ 739608e7c5b6ce4671295bfa37514ceb35fac04848a5527bc4abab375932bcc5 10627 main/binary-amd64/Packages
+ 7898f750e16fbc6fcb777ead104bf781ebce4919e19c640581d640a9debd2eea 2888 main/binary-amd64/Packages.gz
  42b6bec9b386ec013fb334e46fe1f1605ca568ed42bad7ce12a3b4b1afed8bbc 75 main/binary-amd64/Release
