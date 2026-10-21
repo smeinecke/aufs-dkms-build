@@ -1,17 +1,17 @@
 Codename: bookworm
-Date: Wed, 07 Oct 2026 12:13:41 UTC
+Date: Wed, 21 Oct 2026 10:15:54 UTC
 Architectures: amd64
 Components: main
 Description: smeinecke/aufs-dkms-build
 MD5Sum:
- 2869f1262d982d103e7fbf2f7f64546a 7640 main/binary-amd64/Packages
- c0cc81b31c2084d7c2dca9304825beb5 2763 main/binary-amd64/Packages.gz
+ 5c129a7e07cff210856d608939c6c420 10607 main/binary-amd64/Packages
+ f199d075458002187c3b13c2f4e8e73a 3168 main/binary-amd64/Packages.gz
  e49d0349455f04b5b6e7a6887d8ec700 75 main/binary-amd64/Release
 SHA1:
- 614b0851a3606a4b99c7aba1a53ad13e32bde7af 7640 main/binary-amd64/Packages
- a7c69f85cd698633e9e150f1f0fa230ac73014d0 2763 main/binary-amd64/Packages.gz
+ f5943785d177b3ae5a8461f56f67a0e1ce50283d 10607 main/binary-amd64/Packages
+ 9b3259f195401e89f4f57a21f8e25b41dfcf912c 3168 main/binary-amd64/Packages.gz
  a337190f5b9df5b3ed2212d7b524c0a58e6a65a0 75 main/binary-amd64/Release
 SHA256:
- 6b98c2c9c340b3a9ae9c0feaf46726e7688ed1391d0ba1c9a83514bdd469c9d7 7640 main/binary-amd64/Packages
- c84f706a41a1db77bcc615552be66b2f3db15615b688c9d6933554ab3bd633ff 2763 main/binary-amd64/Packages.gz
+ d4a373b94838277bf8d15f650f8fb839ce59601b2a7fe7170f8e1bd64b0ced07 10607 main/binary-amd64/Packages
+ f06b88154c13689e51e5b2b3b78131595fb0510f96ab715c3d3eba50e733a31a 3168 main/binary-amd64/Packages.gz
  42b6bec9b386ec013fb334e46fe1f1605ca568ed42bad7ce12a3b4b1afed8bbc 75 main/binary-amd64/Release
