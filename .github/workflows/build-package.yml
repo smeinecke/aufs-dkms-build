@@ -73,7 +73,7 @@ jobs:
           path: packages
       - name: Github pages APT repo
         if: hashFiles('packages/*.deb') != ''
-        uses: smeinecke/apt-repo-action@f7bfcf90edda137bd1c808863ae2bc24cea959df # v2.2.1
+        uses: smeinecke/apt-repo-action@7c5803568967894a91ee0ed0e4b845dcb0694a3e # v2.2.4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           repo_supported_arch: amd64
